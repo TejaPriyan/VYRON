@@ -1,0 +1,65 @@
+# STATUS: UNVERIFIED. This workflow has never run. Its YAML structure was parsed and the commands in
+# the `stdlib` job were run locally through scripts/verify_stdlib.sh, but GitHub Actions itself, the
+# action versions below, and the whole `api` job (which needs the package registries) were not.
+# Third-party actions are tagged by version here; pin them by commit hash before relying on this file.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Everything that needs no installed packages: unit, contract and integration tests, the strict
+  # TypeScript check, generated-file freshness and Docker Compose resolution.
+  stdlib:
+    name: Standard-library checks (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22" # TypeScript tests run without a flag from 22.18
+      - name: Install the TypeScript compiler
+        # The only npm install: a compiler for the strict type check. 6.0.3 is the version it was run with.
+        run: npm install --global typescript@6.0.3
+      - name: Verify
+        run: scripts/verify_stdlib.sh --strict
+
+  # The full Python toolchain. Needs package access; never run on this code, so expect the first run to
+  # report formatting, typing or collection problems that the standard-library checks cannot see.
+  api:
+    name: API toolchain (lint, typecheck, test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install
+        run: uv sync --all-groups
+      - name: Lint
+        run: uv run ruff check .
+      - name: Format check
+        run: uv run ruff format --check .
+      - name: Typecheck
+        run: uv run mypy
+      - name: Test
+        run: uv run pytest
+
+  # The web job (install, lint, typecheck, test, build) is added with the Next.js app, which is not written.

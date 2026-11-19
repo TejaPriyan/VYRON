@@ -1,0 +1,14 @@
+{
+  "$comment": "Emit config for the dependency-free browser prototype. Only the TypeScript compiler is needed. The output mirrors the repository tree under dist/js, so '/js/apps/web/prototype/src/main.js' and '/js/packages/graph/src/...' resolve the way the source imports do. rewriteRelativeImportExtensions turns './x.ts' into './x.js'. Tests are not emitted.",
+  "extends": "../../../tsconfig.check.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "../../..",
+    "outDir": "dist/js",
+    "rewriteRelativeImportExtensions": true,
+    "sourceMap": false,
+    "declaration": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/node_modules", "dist"]
+}

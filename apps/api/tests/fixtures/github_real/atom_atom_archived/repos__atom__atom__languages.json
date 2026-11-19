@@ -1,0 +1,26 @@
+{
+  "body": {
+    "Batchfile": 2431,
+    "CoffeeScript": 142807,
+    "Dockerfile": 682,
+    "EJS": 124,
+    "HTML": 336,
+    "JavaScript": 4525809,
+    "Less": 445983,
+    "Shell": 7778
+  },
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"394de48d3ae4bf473e25d273ed51a411e86d9b8fb87d02006dc38e972f02c4b2\"",
+    "last-modified": "Tue, 27 Oct 2026 01:57:42 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "55",
+    "x-ratelimit-reset": "1793080529",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "5"
+  },
+  "request": "/repos/atom/atom/languages",
+  "status": 200
+}

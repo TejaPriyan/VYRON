@@ -1,0 +1,19 @@
+{
+  "body": {
+    "documentation_url": "https://docs.github.com/rest/repos/repos#list-repository-contributors",
+    "message": "The history or contributor list is too large to list contributors for this repository via the API.",
+    "status": "403"
+  },
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "51",
+    "x-ratelimit-reset": "1793619158",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "9"
+  },
+  "request": "/repos/torvalds/linux/contributors?per_page=10",
+  "status": 403
+}

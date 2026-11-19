@@ -1,0 +1,90 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "/#website",
+      "name": "VYRON: The Living Map of Technology",
+      "alternateName": "VYRON",
+      "description": "An interactive, provenance-first technology atlas for exploring technology relationships, shortest paths, timelines, live GitHub repositories, live PyPI and npm dependency graphs, release histories, and side-by-side comparisons.",
+      "inLanguage": "en",
+      "url": "/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "/#app",
+      "name": "VYRON",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "license": "https://opensource.org/licenses/MIT",
+      "description": "Open-source development prototype mapping technology ecosystems with explicit provenance, live GitHub repository readings, live PyPI/npm dependency trees, release histories, and side-by-side package and repository comparison.",
+      "featureList": [
+        "Interactive SVG technology map with cluster detection and accessible text outline",
+        "Shortest-path finder between technologies using the live graph API",
+        "Historical year timeline strip with Play and Pause playback",
+        "Live public GitHub repository analysis with contributors, latest release, and 52-week commit activity",
+        "Live PyPI and npm interactive dependency graph and release date timeline",
+        "Side-by-side comparison of two packages or two GitHub repositories with overlap diff",
+        "Client-side JSON evidence pack export with exact source URLs and timestamps"
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "/#map",
+      "url": "/",
+      "name": "VYRON Interactive Technology Map",
+      "description": "Explore 60 development-seed technologies, 68 relationships, 20 clusters, shortest paths, and historical timeline slices."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "/repository.html#page",
+      "url": "/repository.html",
+      "name": "VYRON Live GitHub Repository Analysis",
+      "description": "Inspect any public GitHub repository live with stars, forks, license, language shares, contributors, latest release, commit activity, and exact API source URLs."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "/dependencies.html#page",
+      "url": "/dependencies.html",
+      "name": "VYRON Package Dependency Graph & Release History",
+      "description": "Explore declared PyPI and npm package dependencies one package at a time alongside registry release dates and provenance."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "/compare.html#page",
+      "url": "/compare.html",
+      "name": "VYRON Side-by-Side Compare",
+      "description": "Compare two PyPI or npm packages or two public GitHub repositories side by side with dependency and language overlap diffs."
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is VYRON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "VYRON is an open-source, provenance-first technology atlas prototype. It combines an interactive technology graph with live, unstored readings of public GitHub repositories and PyPI/npm package dependency graphs and release histories."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where does VYRON get repository and package data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Live readings come directly from the GitHub REST API, PyPI JSON API, and npm registry API on request. Every response displays exact source URLs, cache freshness, and read timestamps; the map page uses clearly labelled development seed data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does VYRON store personal data or tokens in the browser?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. VYRON uses no browser storage (no localStorage, sessionStorage, or tracking cookies), enforces a strict Content Security Policy, and performs all external API requests server-side."
+          }
+        }
+      ]
+    }
+  ]
+}

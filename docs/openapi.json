@@ -1,0 +1,4852 @@
+{
+  "openapi": "3.1.0",
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "info": {
+    "title": "VYRON API",
+    "version": "0.1.0",
+    "description": "Read API for the VYRON technology knowledge graph. Seed data is development data and is labelled in responses. Operations marked x-vyron-status: planned are specified but not implemented. This document is generated from the route registry; do not edit it."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same origin (the web app proxies server-side)."
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Account creation and sessions (planned)."
+    },
+    {
+      "name": "companies",
+      "description": "Companies and organizations."
+    },
+    {
+      "name": "entities",
+      "description": "Technologies, languages, frameworks, companies, repositories and other graph nodes."
+    },
+    {
+      "name": "evidence",
+      "description": "Sources and evidence behind statements (planned)."
+    },
+    {
+      "name": "future",
+      "description": "Future Lab scenarios; always labelled 'predicted' (planned)."
+    },
+    {
+      "name": "github",
+      "description": "GitHub link parsing and (planned) repository analysis."
+    },
+    {
+      "name": "graph",
+      "description": "Neighborhoods, shortest paths and whole-graph statistics."
+    },
+    {
+      "name": "registries",
+      "description": "Packages as PyPI and npm describe them, read when asked: declared dependencies with their source."
+    },
+    {
+      "name": "repositories",
+      "description": "Repository intelligence (planned)."
+    },
+    {
+      "name": "research",
+      "description": "AI-assisted research over retrieved evidence (planned)."
+    },
+    {
+      "name": "search",
+      "description": "Ranked, typo-tolerant entity search."
+    },
+    {
+      "name": "system",
+      "description": "Liveness, readiness, service metadata and vocabularies."
+    },
+    {
+      "name": "technologies",
+      "description": "Technology-like entities."
+    },
+    {
+      "name": "timeline",
+      "description": "Dated events. Predictions are labelled and opt-in."
+    },
+    {
+      "name": "user",
+      "description": "The signed-in user's bookmarks and saved maps (planned)."
+    }
+  ],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "health_live",
+        "summary": "Liveness probe",
+        "tags": [
+          "system"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "health",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Reports only that the process is serving requests."
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "health_ready",
+        "summary": "Readiness probe",
+        "tags": [
+          "system"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "health",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Reports the state of each backing service; 503 when the graph is unavailable."
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "operationId": "get_meta",
+        "summary": "Service metadata, vocabularies and limits",
+        "tags": [
+          "system"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/v1/entities": {
+      "get": {
+        "operationId": "list_entities",
+        "summary": "List entities by name",
+        "tags": [
+          "entities"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/EntityKind"
+              },
+              "maxItems": 14,
+              "uniqueItems": true
+            },
+            "description": "Restrict to these kinds (repeat the parameter).",
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/entities/{entity_id}": {
+      "get": {
+        "operationId": "get_entity",
+        "summary": "Get one entity",
+        "tags": [
+          "entities"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entity"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Entity id (UUID)."
+          }
+        ]
+      }
+    },
+    "/api/v1/entities/by-slug/{kind}/{slug}": {
+      "get": {
+        "operationId": "get_entity_by_slug",
+        "summary": "Get one entity by kind and slug",
+        "tags": [
+          "entities"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entity"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EntityKind"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/entities/{entity_id}/neighbors": {
+      "get": {
+        "operationId": "get_entity_neighbors",
+        "summary": "Entities connected to this one",
+        "tags": [
+          "entities",
+          "graph"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "graph",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subgraph"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Entity id (UUID)."
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 0,
+              "maximum": 3
+            },
+            "description": "Hops to follow; relationships are traversed in both directions."
+          },
+          {
+            "name": "relation_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/RelationType"
+              },
+              "maxItems": 20,
+              "uniqueItems": true
+            },
+            "description": "Only follow these relationship types (repeat the parameter).",
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "max_nodes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "minimum": 1,
+              "maximum": 300
+            },
+            "description": "Node limit; the response says when it truncated."
+          }
+        ]
+      }
+    },
+    "/api/v1/entities/{entity_id}/timeline": {
+      "get": {
+        "operationId": "get_entity_timeline",
+        "summary": "Timeline events for one entity",
+        "tags": [
+          "entities",
+          "timeline"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Entity id (UUID)."
+          },
+          {
+            "name": "include_predictions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Predictions are labelled and only returned on request."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/technologies": {
+      "get": {
+        "operationId": "list_technologies",
+        "summary": "List technology-like entities",
+        "tags": [
+          "technologies"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Languages, frameworks, libraries, databases, platforms, APIs, AI models and other technologies. ``kind`` may only narrow within those kinds.",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/EntityKind"
+              },
+              "maxItems": 14,
+              "uniqueItems": true
+            },
+            "description": "Restrict to these kinds (repeat the parameter).",
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/companies": {
+      "get": {
+        "operationId": "list_companies",
+        "summary": "List companies and organizations",
+        "tags": [
+          "companies"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/EntityKind"
+              },
+              "maxItems": 14,
+              "uniqueItems": true
+            },
+            "description": "Restrict to these kinds (repeat the parameter).",
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "operationId": "search",
+        "summary": "Ranked entity search",
+        "tags": [
+          "search"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "search",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "description": "Search text; tolerant of case, punctuation and small typos."
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/EntityKind"
+              },
+              "maxItems": 14,
+              "uniqueItems": true
+            },
+            "description": "Restrict to these kinds (repeat the parameter).",
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/graph/overview": {
+      "get": {
+        "operationId": "graph_overview",
+        "summary": "Whole-graph statistics, central entities and clusters",
+        "tags": [
+          "graph"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "graph",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphOverview"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "top",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 20
+            },
+            "description": "Number of central entities."
+          },
+          {
+            "name": "clusters",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 8,
+              "minimum": 1,
+              "maximum": 20
+            },
+            "description": "Number of clusters, largest first."
+          }
+        ]
+      }
+    },
+    "/api/v1/graph/path": {
+      "get": {
+        "operationId": "graph_path",
+        "summary": "Shortest connection between two entities",
+        "tags": [
+          "graph"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "graph",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PathResult"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Start entity id."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "End entity id."
+          },
+          {
+            "name": "max_depth",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 6,
+              "minimum": 1,
+              "maximum": 8
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/timeline": {
+      "get": {
+        "operationId": "timeline",
+        "summary": "Timeline events across entities",
+        "tags": [
+          "timeline"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "start_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2200
+            }
+          },
+          {
+            "name": "end_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2200
+            }
+          },
+          {
+            "name": "include_predictions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/github/parse": {
+      "get": {
+        "operationId": "github_parse",
+        "summary": "Classify a pasted GitHub link without contacting GitHub",
+        "tags": [
+          "github"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "github",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubTarget"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Pure validation. Only github.com is accepted, so this cannot be used to make the server request another host.",
+        "parameters": [
+          {
+            "name": "input",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/github/repositories/{owner}/{repo}": {
+      "get": {
+        "operationId": "get_repository_analysis",
+        "summary": "Analyze a public GitHub repository",
+        "tags": [
+          "github",
+          "repositories"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "github",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryAnalysis"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Reads the repository from the GitHub REST API when asked, through a short server-side cache, so values can be up to a minute old; `fetched_at` and `cache_status` say how old. Values are as GitHub reports them and nothing is stored. Private repositories are reported as not found. Answers 503 when the server has GitHub access switched off.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 39
+            }
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/github/repositories/{owner}/{repo}/activity": {
+      "get": {
+        "operationId": "get_repository_activity",
+        "summary": "Top contributors and latest release of a public GitHub repository",
+        "tags": [
+          "github",
+          "repositories"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "github",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryActivity"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "A separate, opt-in read: the ten accounts GitHub lists with the most contributions and GitHub's 'latest release'. It costs two more GitHub requests (three when the repository copy is older than a minute), which is why it is not part of the basic analysis. `contributors_status` is `listed`, `none` (GitHub has nothing to list) or `declined` (GitHub refuses to list them for very large histories); `latest_release` is null when the repository has no published release. Values are as GitHub reports them and nothing is stored. Private repositories are reported as not found. Answers 503 when the server has GitHub access switched off.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 39
+            }
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/github/repositories/{owner}/{repo}/commit-activity": {
+      "get": {
+        "operationId": "get_commit_activity",
+        "summary": "A year of weekly commit counts for a public GitHub repository",
+        "tags": [
+          "github",
+          "repositories"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "github",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitActivity"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "A separate, opt-in read: commits on the default branch for each of the last 52 weeks, as GitHub reports them. GitHub computes these in the background, so the first ask can only be answered `status: computing` (GitHub's own 202); ask again a few seconds later. VYRON never waits for it. `none` means GitHub has no commit activity to report. Every ask, `computing` included, costs GitHub requests from the server's quota: one more than the repository read, which is itself reused for a minute. Only a ready answer is kept (for a minute); `computing` is never cached, in the server or in a browser, which is why this route sends no Cache-Control max-age. Values are as GitHub reports them and nothing is stored. Private repositories are reported as not found. Answers 503 when the server has GitHub access switched off.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 39
+            }
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/registries/{registry}/package": {
+      "get": {
+        "operationId": "get_package_dependencies",
+        "summary": "A package's declared dependencies, read from PyPI or npm",
+        "tags": [
+          "registries"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "registry",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackageReport"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Reads one package from its registry's public JSON API when asked, through a short server-side cache (ten minutes), so values can be that old; `fetched_at` and `cache_status` say how old. It makes at most one registry request and follows no dependency: reading a dependency's own dependencies is another call. `dependencies` are the runtime requirements the package declares with no condition (PyPI) or the `dependencies` of the version tagged `latest` (npm); `left_out` counts what it declares but this read does not list (PyPI requirements under an extra or an environment marker; npm development, peer and optional dependencies). `requirement` is the version range as written, and `readable` is false when it points outside the registry (a URL, a path, an alias). A `sourced` label means the package's own metadata says it, nothing more: it does not say a package is maintained, popular or safe. Nothing is stored. Answers 503 when the server has registry access switched off.",
+        "parameters": [
+          {
+            "name": "registry",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pypi",
+                "npm"
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 214
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/registries/{registry}/releases": {
+      "get": {
+        "operationId": "get_package_releases",
+        "summary": "A package's release dates, read from PyPI or npm",
+        "tags": [
+          "registries"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "registry",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackageReleases"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Every version of one package with the date its registry records for it, oldest first, from the same registry document as the dependencies route (so one registry request can serve both, and the server keeps the answer for ten minutes: `fetched_at` and `cache_status` say how old it is). What a date means differs by registry and is stated in `date_meaning`: PyPI's is the earliest upload time among a version's files, npm's is the registry's own `time` entry. `pre_release` is read from the version number only. `left_out` counts versions the registry names that have no usable date, were unpublished (npm), carry an implausible date or an unusable version string; at most the newest 2000 releases are listed and `omitted_older` counts the rest. PyPI documents the `releases` key this reads as deprecated, so if a PyPI answer has no release dates the route answers 502 with that fixed reason. `sourced` means the registry records it, nothing more: it does not say how a package is maintained. Nothing is stored. Answers 503 when the server has registry access switched off.",
+        "parameters": [
+          {
+            "name": "registry",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pypi",
+                "npm"
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 214
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/github/rate-limit": {
+      "get": {
+        "operationId": "get_github_rate_limit",
+        "summary": "The server's current GitHub API quota",
+        "tags": [
+          "github"
+        ],
+        "x-vyron-status": "implemented",
+        "x-vyron-rate-bucket": "github",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitStatus"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "The quota the server's GitHub credentials have, as of the last response from GitHub (or a live read, which GitHub does not count). Answers 503 when GitHub access is switched off."
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "register",
+        "summary": "Create an account",
+        "tags": [
+          "auth"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "auth",
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "login",
+        "summary": "Start a session",
+        "tags": [
+          "auth"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "auth",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "summary": "End the session",
+        "tags": [
+          "auth"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "auth",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501."
+      }
+    },
+    "/api/v1/user/me": {
+      "get": {
+        "operationId": "get_me",
+        "summary": "The signed-in user's profile",
+        "tags": [
+          "user"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "read",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501."
+      }
+    },
+    "/api/v1/entities/{entity_id}/evidence": {
+      "get": {
+        "operationId": "get_entity_evidence",
+        "summary": "Evidence and sources behind an entity's statements",
+        "tags": [
+          "entities",
+          "evidence"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "read",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/CacheControl"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (If-None-Match matched)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Entity id (UUID)."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/research": {
+      "post": {
+        "operationId": "create_research_run",
+        "summary": "Start an AI-assisted research run",
+        "tags": [
+          "research"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "ai",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501. The run answers only from retrieved evidence; unsupported statements are returned labelled 'ai_generated'.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/research/{run_id}": {
+      "get": {
+        "operationId": "get_research_run",
+        "summary": "Read a research run",
+        "tags": [
+          "research"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "read",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/future/scenarios": {
+      "post": {
+        "operationId": "create_future_scenario",
+        "summary": "Start a Future Lab scenario (always labelled 'predicted')",
+        "tags": [
+          "future"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "ai",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/bookmarks": {
+      "get": {
+        "operationId": "list_bookmarks",
+        "summary": "List bookmarked entities",
+        "tags": [
+          "user"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "read",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookmarkList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      }
+    },
+    "/api/v1/user/bookmarks/{entity_id}": {
+      "put": {
+        "operationId": "add_bookmark",
+        "summary": "Bookmark an entity",
+        "tags": [
+          "user"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "write",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bookmark"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Entity id (UUID)."
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "remove_bookmark",
+        "summary": "Remove a bookmark",
+        "tags": [
+          "user"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "write",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Entity id (UUID)."
+          }
+        ]
+      }
+    },
+    "/api/v1/user/maps": {
+      "get": {
+        "operationId": "list_saved_maps",
+        "summary": "List saved maps",
+        "tags": [
+          "user"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "read",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedMapList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ]
+      },
+      "post": {
+        "operationId": "create_saved_map",
+        "summary": "Save a map",
+        "tags": [
+          "user"
+        ],
+        "x-vyron-status": "planned",
+        "x-vyron-rate-bucket": "write",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/XRequestID"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimitLimit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimitRemaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimitReset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedMap"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "501": {
+            "$ref": "#/components/responses/NotImplemented"
+          }
+        },
+        "description": "PLANNED: specified but not implemented; currently answers 501.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavedMapInput"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EntityKind": {
+        "type": "string",
+        "enum": [
+          "technology",
+          "language",
+          "framework",
+          "library",
+          "ai_model",
+          "company",
+          "organization",
+          "repository",
+          "dataset",
+          "research_paper",
+          "event",
+          "api",
+          "database",
+          "platform"
+        ]
+      },
+      "RelationType": {
+        "type": "string",
+        "enum": [
+          "USES",
+          "DEPENDS_ON",
+          "BUILT_ON",
+          "RELATED_TO",
+          "EVOLVED_FROM",
+          "REPLACED_BY",
+          "USED_BY",
+          "CREATED_BY",
+          "USES_LANGUAGE",
+          "USES_FRAMEWORK",
+          "OWNED_BY",
+          "FORKS",
+          "BUILDS",
+          "OWNS",
+          "ACQUIRED",
+          "INVESTS_IN",
+          "REFERENCES",
+          "RELATES_TO",
+          "SUPPORTS",
+          "CONTRADICTS"
+        ]
+      },
+      "Provenance": {
+        "type": "string",
+        "enum": [
+          "sourced",
+          "estimated",
+          "inferred",
+          "predicted",
+          "user_generated",
+          "ai_generated",
+          "seed"
+        ],
+        "description": "How a statement is backed. Only 'sourced' requires evidence; the rest are labels."
+      },
+      "DatePrecision": {
+        "type": "string",
+        "enum": [
+          "day",
+          "month",
+          "year",
+          "decade"
+        ]
+      },
+      "MapMode": {
+        "type": "string",
+        "enum": [
+          "ecosystem",
+          "dependencies",
+          "companies",
+          "ai",
+          "open_source",
+          "research",
+          "timeline"
+        ]
+      },
+      "ResearchKind": {
+        "type": "string",
+        "enum": [
+          "explain_entity",
+          "explain_relationship",
+          "compare",
+          "historical",
+          "explain_repository",
+          "risk",
+          "research",
+          "graph_question",
+          "future_scenario"
+        ]
+      },
+      "ResearchStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed"
+        ]
+      },
+      "JobStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "cancelled"
+        ]
+      },
+      "SourceType": {
+        "type": "string",
+        "enum": [
+          "official_docs",
+          "repository",
+          "paper",
+          "news",
+          "blog",
+          "archive",
+          "dataset",
+          "other"
+        ]
+      },
+      "Reliability": {
+        "type": "string",
+        "enum": [
+          "primary",
+          "secondary",
+          "tertiary",
+          "unverified"
+        ]
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "bad_request",
+          "validation_error",
+          "unauthenticated",
+          "forbidden",
+          "not_found",
+          "method_not_allowed",
+          "conflict",
+          "payload_too_large",
+          "unsupported_media_type",
+          "rate_limited",
+          "internal_error",
+          "not_implemented",
+          "upstream_error",
+          "upstream_rate_limited",
+          "service_unavailable"
+        ]
+      },
+      "GitHubTargetKind": {
+        "type": "string",
+        "enum": [
+          "owner",
+          "repository",
+          "issue",
+          "pull_request",
+          "commit",
+          "release",
+          "tree",
+          "blob"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              "message": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "request_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "issue": {
+                      "type": "string",
+                      "maxLength": 500
+                    }
+                  },
+                  "required": [
+                    "field",
+                    "issue"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 20
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "request_id"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "PageInfo": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "limit",
+          "total",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "Entity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EntityKind"
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "maxItems": 50
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "slug",
+          "name",
+          "aliases",
+          "provenance"
+        ],
+        "additionalProperties": false
+      },
+      "EntityList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            },
+            "maxItems": 100
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageInfo"
+          },
+          "data_notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Present when any returned item is development seed data rather than a production fact."
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "data_notice"
+        ],
+        "additionalProperties": false
+      },
+      "Relationship": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "$ref": "#/components/schemas/RelationType"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "source_id",
+          "target_id",
+          "type",
+          "provenance",
+          "evidence_ids"
+        ],
+        "additionalProperties": false
+      },
+      "Subgraph": {
+        "type": "object",
+        "properties": {
+          "center_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            },
+            "maxItems": 300
+          },
+          "relationships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Relationship"
+            },
+            "maxItems": 1000
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "True when the node or edge limit cut the result short."
+          },
+          "data_notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Present when any returned item is development seed data rather than a production fact."
+          }
+        },
+        "required": [
+          "center_id",
+          "depth",
+          "entities",
+          "relationships",
+          "truncated",
+          "data_notice"
+        ],
+        "additionalProperties": false
+      },
+      "PathResult": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "found": {
+            "type": "boolean"
+          },
+          "entity_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 9,
+            "description": "Entities along the path, in order; empty when not found."
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            },
+            "maxItems": 9
+          },
+          "relationships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Relationship"
+            },
+            "maxItems": 8,
+            "description": "One relationship per hop."
+          },
+          "data_notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Present when any returned item is development seed data rather than a production fact."
+          }
+        },
+        "required": [
+          "source_id",
+          "target_id",
+          "found",
+          "entity_ids",
+          "entities",
+          "relationships",
+          "data_notice"
+        ],
+        "additionalProperties": false
+      },
+      "GraphOverview": {
+        "type": "object",
+        "properties": {
+          "entity_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "relationship_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "component_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "top_entities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entity": {
+                  "$ref": "#/components/schemas/Entity"
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "entity",
+                "score"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 20
+          },
+          "clusters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "member_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "maxItems": 300,
+                  "description": "Most central members first. Fewer than size means the list was cut."
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "size",
+                "member_ids"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 20
+          },
+          "score_method": {
+            "type": "string",
+            "const": "pagerank"
+          },
+          "score_provenance": {
+            "type": "string",
+            "const": "estimated"
+          },
+          "data_notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Present when any returned item is development seed data rather than a production fact."
+          }
+        },
+        "required": [
+          "entity_count",
+          "relationship_count",
+          "component_count",
+          "top_entities",
+          "clusters",
+          "score_method",
+          "score_provenance",
+          "data_notice"
+        ],
+        "additionalProperties": false
+      },
+      "TimelineEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "occurred_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "date_precision": {
+            "$ref": "#/components/schemas/DatePrecision"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "event_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "is_prediction": {
+            "type": "boolean",
+            "description": "True exactly when provenance is 'predicted'."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "occurred_on",
+          "date_precision",
+          "title",
+          "event_type",
+          "provenance",
+          "is_prediction",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "TimelineList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelineEvent"
+            },
+            "maxItems": 100
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageInfo"
+          },
+          "include_predictions": {
+            "type": "boolean"
+          },
+          "data_notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Present when any returned item is development seed data rather than a production fact."
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "include_predictions",
+          "data_notice"
+        ],
+        "additionalProperties": false
+      },
+      "GitHubTarget": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/GitHubTargetKind"
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 39
+          },
+          "repo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          },
+          "html_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "kind",
+          "owner",
+          "repo",
+          "number",
+          "ref",
+          "html_url"
+        ],
+        "additionalProperties": false
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "const": "VYRON"
+          },
+          "api_version": {
+            "type": "string",
+            "pattern": "^v[0-9]+$"
+          },
+          "data_mode": {
+            "type": "string",
+            "enum": [
+              "seed",
+              "database"
+            ]
+          },
+          "data_notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Present when any returned item is development seed data rather than a production fact."
+          },
+          "enums": {
+            "type": "object",
+            "properties": {
+              "entity_kinds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityKind"
+                },
+                "maxItems": 14
+              },
+              "relation_types": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RelationType"
+                },
+                "maxItems": 20
+              },
+              "provenance": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Provenance"
+                },
+                "maxItems": 7
+              }
+            },
+            "required": [
+              "entity_kinds",
+              "relation_types",
+              "provenance"
+            ],
+            "additionalProperties": false
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "max_page_size": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "default_page_size": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "max_graph_depth": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "max_graph_nodes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "max_path_depth": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "max_page_size",
+              "default_page_size",
+              "max_graph_depth",
+              "max_graph_nodes",
+              "max_path_depth"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "name",
+          "api_version",
+          "data_mode",
+          "data_notice",
+          "enums",
+          "limits"
+        ],
+        "additionalProperties": false
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          },
+          "checks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "unavailable",
+                "not_configured"
+              ]
+            }
+          }
+        },
+        "required": [
+          "status",
+          "checks"
+        ],
+        "additionalProperties": false
+      },
+      "Credentials": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "role",
+          "created_at"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "Source": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "publisher": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "published_on": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "reliability": {
+            "$ref": "#/components/schemas/Reliability"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "title",
+          "source_type",
+          "publisher",
+          "published_on",
+          "reliability",
+          "retrieved_at"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "Evidence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "locator": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "claim",
+          "locator",
+          "retrieved_at",
+          "source"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "EvidenceList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            }
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        },
+        "required": [
+          "items",
+          "page"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "RepositoryAnalysis": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 140
+          },
+          "html_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "default_branch": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "primary_language": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "languages": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxProperties": 200
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "maxItems": 100
+          },
+          "license_spdx": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "license_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "stars": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "forks": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "open_issues": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "is_fork": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "pushed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cache_status": {
+            "type": "string",
+            "enum": [
+              "fresh",
+              "revalidated",
+              "stale"
+            ]
+          },
+          "source_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 300
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "description": "The GitHub API URLs the values were read from: the evidence for the label."
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "full_name",
+          "html_url",
+          "description",
+          "default_branch",
+          "primary_language",
+          "languages",
+          "topics",
+          "license_spdx",
+          "license_name",
+          "stars",
+          "forks",
+          "open_issues",
+          "archived",
+          "is_fork",
+          "created_at",
+          "pushed_at",
+          "fetched_at",
+          "cache_status",
+          "source_urls",
+          "provenance"
+        ],
+        "additionalProperties": false
+      },
+      "Contributor": {
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "contributions": {
+            "type": "integer",
+            "description": "Commits GitHub attributes to the account, as it reports them.",
+            "minimum": 0
+          },
+          "is_bot": {
+            "type": "boolean"
+          },
+          "profile_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 300,
+            "description": "Built by VYRON from a login that passes GitHub's naming rules. Null for bots."
+          }
+        },
+        "required": [
+          "login",
+          "contributions",
+          "is_bot",
+          "profile_url"
+        ],
+        "additionalProperties": false
+      },
+      "LatestRelease": {
+        "type": "object",
+        "properties": {
+          "tag_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "prerelease": {
+            "type": "boolean"
+          },
+          "html_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "tag_name",
+          "name",
+          "published_at",
+          "prerelease",
+          "html_url"
+        ],
+        "additionalProperties": false,
+        "description": "GitHub's 'latest release': the most recent release that is not a draft or pre-release, ordered by its created date (the date of the commit the release uses). That is GitHub's definition, not necessarily the highest version number."
+      },
+      "RepositoryActivity": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 140
+          },
+          "html_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          },
+          "contributors_status": {
+            "type": "string",
+            "enum": [
+              "listed",
+              "none",
+              "declined"
+            ]
+          },
+          "contributors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contributor"
+            },
+            "maxItems": 10
+          },
+          "latest_release": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LatestRelease"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cache_status": {
+            "type": "string",
+            "enum": [
+              "fresh",
+              "revalidated",
+              "stale"
+            ]
+          },
+          "source_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 300
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "description": "Every GitHub API URL the values rest on, including one whose answer was a 403 or 404."
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "full_name",
+          "html_url",
+          "contributors_status",
+          "contributors",
+          "latest_release",
+          "fetched_at",
+          "cache_status",
+          "source_urls",
+          "provenance"
+        ],
+        "additionalProperties": false
+      },
+      "CommitWeek": {
+        "type": "object",
+        "properties": {
+          "week_start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxItems": 7,
+            "minItems": 7,
+            "description": "Commits on each day, Sunday first."
+          },
+          "total": {
+            "type": "integer",
+            "description": "GitHub's total for the week; it equals the sum of `days`.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "week_start",
+          "days",
+          "total"
+        ],
+        "additionalProperties": false,
+        "description": "One week of commits on the default branch, starting on a Sunday at 00:00 UTC."
+      },
+      "CommitActivity": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 140
+          },
+          "html_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "computing",
+              "none"
+            ]
+          },
+          "weeks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommitWeek"
+            },
+            "maxItems": 60,
+            "description": "Oldest week first. Empty unless `ready`."
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cache_status": {
+            "type": "string",
+            "enum": [
+              "fresh",
+              "revalidated",
+              "stale"
+            ]
+          },
+          "source_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 300
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "description": "Every GitHub API URL the values rest on, including one whose answer was a 202 or 204."
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "full_name",
+          "html_url",
+          "status",
+          "weeks",
+          "fetched_at",
+          "cache_status",
+          "source_urls",
+          "provenance"
+        ],
+        "additionalProperties": false
+      },
+      "PackageDependency": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 214,
+            "description": "What to ask the registry for."
+          },
+          "requirement": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100,
+            "description": "The version range as the package declares it. Null when none is given or when it is not plain version syntax."
+          },
+          "readable": {
+            "type": "boolean",
+            "description": "False when the requirement points outside the registry (a URL, a path, an alias), so the name does not identify a package there."
+          }
+        },
+        "required": [
+          "name",
+          "requirement",
+          "readable"
+        ],
+        "additionalProperties": false
+      },
+      "PackageLeftOut": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "conditional",
+              "development",
+              "peer",
+              "optional",
+              "unusable"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "kind",
+          "count"
+        ],
+        "additionalProperties": false,
+        "description": "Declared by the package but not listed in `dependencies`. `conditional` is a PyPI requirement under an extra or an environment marker; `unusable` is a name no registry could have issued."
+      },
+      "PackageReport": {
+        "type": "object",
+        "properties": {
+          "registry": {
+            "type": "string",
+            "enum": [
+              "pypi",
+              "npm"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 214
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "license": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64,
+            "description": "As the maintainer wrote it; not validated."
+          },
+          "homepage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 300
+          },
+          "registry_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 300,
+            "description": "The package's page for people, built by VYRON from the checked name. Null when the values came from a stand-in rather than the registry."
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageDependency"
+            },
+            "maxItems": 500
+          },
+          "left_out": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageLeftOut"
+            },
+            "maxItems": 5
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cache_status": {
+            "type": "string",
+            "enum": [
+              "fresh",
+              "stale"
+            ]
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300,
+            "description": "The registry API address the values were read from: the evidence for the label."
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "registry",
+          "name",
+          "version",
+          "summary",
+          "license",
+          "homepage",
+          "registry_url",
+          "dependencies",
+          "left_out",
+          "fetched_at",
+          "cache_status",
+          "source_url",
+          "provenance"
+        ],
+        "additionalProperties": false
+      },
+      "ReleaseEntry": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "released_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "pre_release": {
+            "type": "boolean",
+            "description": "True when the version NUMBER looks like a pre-release (a PEP 440 a/b/rc/dev segment for PyPI, a `-` suffix for npm). A reading of the string, not something the registry says."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "yanked",
+              "deprecated"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "released_at",
+          "pre_release",
+          "status"
+        ],
+        "additionalProperties": false,
+        "description": "One version and the date its registry records for it. `yanked` is PyPI's flag (every file of the version is yanked); `deprecated` is npm's."
+      },
+      "ReleaseLeftOut": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "undated",
+              "removed",
+              "implausible_date",
+              "unusable"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "kind",
+          "count"
+        ],
+        "additionalProperties": false,
+        "description": "Versions the registry names that are not in `releases`. `undated`: no usable date came with the version. `removed`: npm still holds a date for a version that is no longer published. `implausible_date`: before 1991 or after the moment of the read. `unusable`: a version string no registry would issue."
+      },
+      "PackageReleases": {
+        "type": "object",
+        "properties": {
+          "registry": {
+            "type": "string",
+            "enum": [
+              "pypi",
+              "npm"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 214
+          },
+          "registry_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 300,
+            "description": "The package's page for people. Null when the values came from a stand-in."
+          },
+          "releases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReleaseEntry"
+            },
+            "maxItems": 2000,
+            "description": "Oldest first."
+          },
+          "omitted_older": {
+            "type": "integer",
+            "description": "Earlier releases left out to keep the list to 2000 entries.",
+            "minimum": 0
+          },
+          "left_out": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReleaseLeftOut"
+            },
+            "maxItems": 4
+          },
+          "date_meaning": {
+            "type": "string",
+            "enum": [
+              "first_file_upload",
+              "publish_time"
+            ]
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cache_status": {
+            "type": "string",
+            "enum": [
+              "fresh",
+              "stale"
+            ]
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 300,
+            "description": "The registry API address the values were read from: the evidence for the label."
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "required": [
+          "registry",
+          "name",
+          "registry_url",
+          "releases",
+          "omitted_older",
+          "left_out",
+          "date_meaning",
+          "fetched_at",
+          "cache_status",
+          "source_url",
+          "provenance"
+        ],
+        "additionalProperties": false,
+        "description": "`date_meaning` says what a date is: `first_file_upload` (PyPI: the earliest upload time among a version's files) or `publish_time` (npm: the registry's own `time` entry)."
+      },
+      "RateLimitStatus": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "remaining": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "used": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "reset_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "resource": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "limit",
+          "remaining",
+          "used",
+          "reset_at",
+          "resource"
+        ],
+        "additionalProperties": false
+      },
+      "ResearchRequest": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ResearchKind"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "entity_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 10,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "kind",
+          "entity_ids"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "ResearchClaim": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 50
+          },
+          "confidence": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "text",
+          "provenance",
+          "evidence_ids",
+          "confidence"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "ResearchRun": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ResearchKind"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResearchStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4000
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResearchClaim"
+            }
+          },
+          "uncertainty": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "rejected_citation_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failure_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "created_at",
+          "finished_at",
+          "summary",
+          "claims",
+          "uncertainty",
+          "rejected_citation_count",
+          "failure_reason"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "Bookmark": {
+        "type": "object",
+        "properties": {
+          "entity": {
+            "$ref": "#/components/schemas/Entity"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "entity",
+          "created_at"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "BookmarkList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bookmark"
+            }
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        },
+        "required": [
+          "items",
+          "page"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "SavedMapInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "mode": {
+            "$ref": "#/components/schemas/MapMode"
+          },
+          "entity_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "name",
+          "mode",
+          "entity_ids"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "SavedMap": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "mode": {
+            "$ref": "#/components/schemas/MapMode"
+          },
+          "entity_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 200
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "mode",
+          "entity_ids",
+          "created_at"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      },
+      "SavedMapList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SavedMap"
+            }
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageInfo"
+          }
+        },
+        "required": [
+          "items",
+          "page"
+        ],
+        "additionalProperties": false,
+        "x-vyron-status": "planned"
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "A parameter or body field is invalid.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "The request is malformed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthenticated": {
+        "description": "A valid session is required.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "The session is not allowed to do this.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The resource does not exist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Too many requests; see the Retry-After header.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "An unexpected error occurred.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotImplemented": {
+        "description": "Specified but not implemented yet.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ServiceUnavailable": {
+        "description": "A backing service is unavailable.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "XRequestID": {
+        "description": "Echoes a valid inbound X-Request-ID, or a generated one.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "RateLimitLimit": {
+        "description": "Requests allowed per window.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RateLimitRemaining": {
+        "description": "Requests left in this window.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RateLimitReset": {
+        "description": "Seconds until the window resets.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "ETag": {
+        "description": "Send as If-None-Match to receive 304.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "CacheControl": {
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "vyron_session",
+        "description": "HttpOnly, Secure, SameSite=Lax session cookie (planned)."
+      }
+    }
+  },
+  "x-vyron-limits": {
+    "max_page_size": 100,
+    "max_graph_depth": 3,
+    "max_graph_nodes": 300
+  }
+}

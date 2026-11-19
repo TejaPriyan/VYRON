@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0e14" />
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Compare two public GitHub repositories or two PyPI/npm packages side by side in VYRON, showing dependency overlap, language shares, release spans, and exact source URLs." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VYRON" />
+    <meta property="og:title" content="VYRON — Side-by-Side Package & Repository Compare" />
+    <meta property="og:description" content="Compare two PyPI/npm packages or two public GitHub repositories live with shared vs. unique dependency and language diffs." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="VYRON — Side-by-Side Package & Repository Compare" />
+    <meta name="twitter:description" content="Live side-by-side comparison of packages and GitHub repositories with provenance and JSON export." />
+    <title>VYRON side-by-side compare</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/ld+json" href="/schema.jsonld" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM and Answer Engine summary" />
+    <link rel="stylesheet" href="/tokens.css" />
+    <link rel="stylesheet" href="/prototype.css" />
+    <script type="module" src="/js/apps/web/prototype/src/compare.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#reading">Skip to the comparison</a>
+
+    <header class="bar compare-bar">
+      <a class="brand" href="/" aria-label="VYRON, back to the map">
+        <span id="brand-mark" aria-hidden="true"></span>
+        <span class="wordmark">VYRON</span>
+      </a>
+      <a class="page-link" href="/">Map</a>
+      <a class="page-link" href="/repository.html">Repository</a>
+      <a class="page-link" href="/dependencies.html">Dependencies</a>
+      <span class="page-link page-current" aria-current="page">Compare</span>
+
+      <form class="repo-form compare-form" id="compare-form" autocomplete="off">
+        <label class="sr-only" for="compare-mode">Compare kind</label>
+        <select id="compare-mode" name="mode" class="registry-pick">
+          <option value="packages">Packages (PyPI / npm)</option>
+          <option value="repos">GitHub repositories</option>
+        </select>
+        <label class="sr-only" for="compare-a">First item</label>
+        <input
+          id="compare-a"
+          class="compare-input"
+          name="a"
+          type="text"
+          placeholder="pypi:flask or npm:express"
+          maxlength="300"
+          spellcheck="false"
+          autocapitalize="off"
+          autocomplete="off"
+        />
+        <label class="sr-only" for="compare-b">Second item</label>
+        <input
+          id="compare-b"
+          class="compare-input"
+          name="b"
+          type="text"
+          placeholder="pypi:django or npm:fastify"
+          maxlength="300"
+          spellcheck="false"
+          autocapitalize="off"
+          autocomplete="off"
+        />
+        <button type="submit" class="primary" id="compare-submit">Compare</button>
+      </form>
+    </header>
+
+    <main class="repo-main" id="compare-main">
+      <section class="repo-reading compare-reading" id="reading" aria-label="Side-by-side comparison" tabindex="-1"></section>
+    </main>
+
+    <footer class="status">
+      <p id="compare-notice">
+        Figures are read live from GitHub, PyPI or npm when you ask. VYRON adds no scores and nothing is stored in your browser.
+      </p>
+    </footer>
+
+    <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+    <noscript><p class="noscript">VYRON needs JavaScript to run a side-by-side comparison through the API.</p></noscript>
+  </body>
+</html>

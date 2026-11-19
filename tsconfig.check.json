@@ -1,0 +1,25 @@
+{
+  "$comment": "Dependency-free type check: only TypeScript itself, no node_modules, no React. Files that import packages (react, next, three, d3) are not listed here and are UNVERIFIED. erasableSyntaxOnly keeps every file runnable by `node` type-stripping, which is how the *.test.ts files are executed.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": [],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "skipLibCheck": false
+  },
+  "include": ["packages/*/src/**/*.ts", "apps/web/src/**/*.ts", "apps/web/prototype/src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/node_modules"]
+}

@@ -1,0 +1,53 @@
+{
+  "body": {
+    "rate": {
+      "limit": 60,
+      "remaining": 52,
+      "reset": 1793080529,
+      "used": 8
+    },
+    "resources": {
+      "code_search": {
+        "limit": 60,
+        "remaining": 52,
+        "reset": 1793080529,
+        "used": 8
+      },
+      "core": {
+        "limit": 60,
+        "remaining": 52,
+        "reset": 1793080529,
+        "used": 8
+      },
+      "graphql": {
+        "limit": 0,
+        "remaining": 0,
+        "reset": 1793080539,
+        "used": 0
+      },
+      "integration_manifest": {
+        "limit": 5000,
+        "remaining": 5000,
+        "reset": 1793080539,
+        "used": 0
+      },
+      "search": {
+        "limit": 10,
+        "remaining": 10,
+        "reset": 1793076999,
+        "used": 0
+      }
+    }
+  },
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "52",
+    "x-ratelimit-reset": "1793080529",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "8"
+  },
+  "request": "/rate_limit",
+  "status": 200
+}

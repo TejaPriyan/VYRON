@@ -1,0 +1,17 @@
+{
+  "attempt": 3,
+  "body": {},
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "47",
+    "x-ratelimit-reset": "1793790043",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "13"
+  },
+  "request": "/repos/pallets/flask/stats/commit_activity",
+  "seconds_since_first_attempt": 11.0,
+  "status": 202
+}

@@ -1,0 +1,16 @@
+{
+  "authenticated": false,
+  "captured_at": "2026-11-02T03:46:26+00:00",
+  "data": "REAL GITHUB DATA",
+  "files": [
+    "rate_limit.json",
+    "repos__pallets__flask.json",
+    "repos__pallets__flask__languages.json",
+    "repos__pallets__flask__contributors__per_page-10.json",
+    "repos__pallets__flask__releases__latest.json",
+    "repos__vyron-check-owner-that-does-not-exist__no-such-repository.json"
+  ],
+  "note": "Response headers are limited to an allow-list; no credential is ever written here.",
+  "source": "https://api.github.com",
+  "tool": "scripts/live_github_check.py"
+}

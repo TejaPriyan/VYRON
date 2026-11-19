@@ -1,0 +1,42 @@
+# secrets: never commit real environment files
+.env
+.env.*
+!.env.example
+
+# dependencies and build output
+node_modules/
+.pnpm-store/
+.next/
+.turbo/
+out/
+dist/
+build/
+coverage/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# tool caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.vite/
+playwright-report/
+test-results/
+
+# local data and logs
+*.log
+*.sqlite
+*.db
+.data/
+
+# output of scripts/live_github_check.py --capture (real GitHub data is kept under apps/api/tests/fixtures)
+/captures/
+/captures_*/
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

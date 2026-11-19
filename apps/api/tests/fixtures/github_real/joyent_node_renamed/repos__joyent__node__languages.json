@@ -1,0 +1,19 @@
+{
+  "body": {
+    "documentation_url": "https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api#follow-redirects",
+    "message": "Moved Permanently",
+    "url": "https://api.github.com/repositories/211666/languages"
+  },
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "50",
+    "x-ratelimit-reset": "1793080529",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "10"
+  },
+  "request": "/repos/joyent/node/languages",
+  "status": 301
+}

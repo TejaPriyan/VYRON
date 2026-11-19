@@ -1,0 +1,23 @@
+{
+  "body": {
+    "CSS": 18,
+    "HTML": 405,
+    "Python": 567577,
+    "Shell": 193
+  },
+  "headers": {
+    "cache-control": "public, max-age=60, s-maxage=60",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"bdbd775d59647536e8fb7862cc0139339ebe8dd1b1f44e9facedac503c2a6103\"",
+    "last-modified": "Wed, 04 Nov 2026 06:20:59 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "53",
+    "x-ratelimit-reset": "1793790043",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "7"
+  },
+  "request": "/repos/pallets/flask/languages",
+  "status": 200
+}

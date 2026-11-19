@@ -1,0 +1,60 @@
+# Build context is the repository root, so everything not listed here is sent to the daemon.
+
+# Secrets and local configuration: never in an image layer
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+**/*.pem
+*.key
+**/*.key
+*.p12
+**/*.p12
+*.pfx
+**/*.pfx
+id_rsa*
+**/id_rsa*
+credentials*.json
+**/credentials*.json
+service-account*.json
+**/service-account*.json
+
+# Version control and editor state
+.git
+.gitignore
+.github
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Dependencies and build output are rebuilt inside the image
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+build
+coverage
+.venv
+**/.venv
+__pycache__
+**/__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+*.tsbuildinfo
+
+# Not needed at run time
+docs
+tests
+**/tests
+**/*.test.ts
+**/typecheck.fixture.ts
+*.md
+docker-compose.yml
+infrastructure/database/seed

@@ -1,0 +1,12 @@
+.git
+.github
+.env
+.env.*
+docs
+infrastructure
+tests
+apps/api/tests
+services
+**/__pycache__
+**/*.test.ts
+**/*.pyc

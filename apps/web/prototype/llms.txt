@@ -1,0 +1,47 @@
+# VYRON: The Living Map of Technology
+
+> VYRON is an open-source interactive technology atlas and evidence-first ecosystem explorer. It maps technologies, languages, frameworks, AI models, platforms, and organizations with explicit provenance labels, interactive shortest-path tracing, historical timeline playback, live GitHub repository readings, live PyPI/npm dependency graphs with release histories, and side-by-side comparisons.
+
+## Important Status Notice
+
+VYRON is in early development and is **not production ready**. Its interactive map currently displays a clearly labelled 60-entity development seed graph (`provenance: "seed"`), while its Repository, Dependencies, Release History, and Compare pages read live public data from GitHub, PyPI, and npm on demand (`provenance: "sourced"`) without storing user or registry data in a database or in browser storage.
+
+## Primary Pages
+
+- `/` — **Interactive Technology Map**: 60 seed entities, 68 relationships, 20 auto-detected clusters, fuzzy search, accessible text outline, shortest-path tracer (`GET /api/v1/graph/path`), historical year slider with Play/Pause playback, and JSON entity export.
+- `/repository.html` — **Live GitHub Repository Reading**: Reads any public GitHub repository (`owner/repo` or pasted GitHub URL) live via the GitHub REST API, showing stars, forks, open issues & PRs, license, language byte shares, cache freshness (`Live`, `Confirmed`, `Stale`), exact GitHub API `source_urls`, opt-in top contributors & latest release, opt-in 52-week commit activity chart, cross-links to PyPI/npm lookup & Compare, and JSON export.
+- `/dependencies.html` — **Live PyPI & npm Package Dependency Graph + Release History**: Reads one PyPI or npm package at a time on request, grows an interactive layered dependency graph as dependencies are opened, separates left-out conditional/dev/peer/optional declarations, shows an opt-in release history timeline and table (`first_file_upload` for PyPI, `publish_time` for npm), cross-links GitHub homepages, and exports JSON evidence packs.
+- `/compare.html` — **Side-by-Side Compare**: Compares two PyPI/npm packages (including deterministic Shared vs. Only-A vs. Only-B direct dependency diff and release history span) or two public GitHub repositories (including counts, status, and language overlap), with provenance badges, source URLs, and JSON export.
+
+## Core API Endpoints (Same-Origin JSON, OpenAPI 3.1)
+
+- `GET /api/v1/meta` — Service metadata, enums, rate limits, and data mode (`seed` or `database`).
+- `GET /api/v1/graph/overview` — Graph statistics, PageRank centrality estimates, and detected clusters.
+- `GET /api/v1/graph/path?from=<uuid>&to=<uuid>` — Shortest undirected path between two entities.
+- `GET /api/v1/search?q=<query>` — Ranked fuzzy search across entities.
+- `GET /api/v1/timeline` — Dated timeline events across entities.
+- `GET /api/v1/github/repositories/{owner}/{repo}` — Live public GitHub repository analysis.
+- `GET /api/v1/github/repositories/{owner}/{repo}/activity` — Opt-in top contributors and latest release.
+- `GET /api/v1/github/repositories/{owner}/{repo}/commit-activity` — Opt-in 52-week weekly commit counts.
+- `GET /api/v1/registries/{registry}/package?name=<pkg>` — Live PyPI or npm declared dependencies.
+- `GET /api/v1/registries/{registry}/releases?name=<pkg>` — Live PyPI or npm release history dates.
+
+## Direct Answers (AEO / GEO Reference)
+
+### What makes VYRON different from ordinary technology directories?
+Every fact carries an explicit provenance label (`sourced`, `estimated`, `inferred`, `predicted`, `user_generated`, `ai_generated`, or `seed`). Seed data is always flagged with a `data_notice`, and live GitHub/PyPI/npm readings carry exact `source_url`s, `fetched_at` timestamps, and cache freshness badges without adding subjective quality scores.
+
+### Does VYRON store user tracking data or API keys in the browser?
+No. The prototype enforces a strict Content Security Policy (`default-src 'self'`, no inline scripts or styles), uses zero `localStorage` or `sessionStorage`, and keeps all upstream API calls server-side.
+
+### What is built versus still planned?
+Built and verified with standard-library tests: the domain model, provenance rules, in-memory graph engine, 21 of 34 HTTP API routes, generated OpenAPI 3.1 contract, typed TypeScript client, design token pipeline, and 4-page browser prototype. Still planned (not built): Next.js frontend, WebGL map renderer at scale, PostgreSQL/Neo4j/Redis persistence adapters, background ingestion workers, authentication, and the Gemini AI research adapter.
+
+## Machine-Readable Metadata
+
+- Structured Data (JSON-LD): `/schema.jsonld`
+- Sitemap: `/sitemap.xml`
+- Crawler Policy: `/robots.txt`
+- Web App Manifest: `/site.webmanifest`
+- OpenAPI 3.1 Contract: `docs/openapi.json` (in repository)
+- License: MIT (`LICENSE`)

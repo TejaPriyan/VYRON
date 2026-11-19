@@ -1,0 +1,16 @@
+{
+  "name": "VYRON: The Living Map of Technology",
+  "short_name": "VYRON",
+  "description": "Provenance-first interactive technology map, live GitHub repository reader, PyPI/npm dependency explorer, and side-by-side comparison tool.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e14",
+  "theme_color": "#0a0e14",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

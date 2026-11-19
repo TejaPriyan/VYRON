@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npx --yes --package=typescript tsc -p apps/web/prototype/tsconfig.json",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{apps/api/src/**,apps/web/prototype/**,apps/web/src/styles/tokens.css}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
+}

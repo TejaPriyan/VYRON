@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0a0e14" />
+  <meta name="robots" content="index, follow" />
+  <meta name="description"
+    content="VYRON interactive technology map: explore 60 development-seed technologies, relationships, clusters, shortest paths, and historical timeline playback with explicit provenance." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="VYRON" />
+  <meta property="og:title" content="VYRON — The Living Map of Technology" />
+  <meta property="og:description"
+    content="Explore technology relationships, shortest paths, clusters, and timeline evolution with provenance labels and an accessible outline." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="VYRON — The Living Map of Technology" />
+  <meta name="twitter:description"
+    content="Interactive provenance-first technology atlas with shortest-path tracing and timeline playback." />
+  <title>VYRON map prototype</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="alternate" type="application/ld+json" href="/schema.jsonld" />
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM and Answer Engine summary" />
+  <link rel="stylesheet" href="/tokens.css" />
+  <link rel="stylesheet" href="/prototype.css" />
+  <script type="module" src="/js/apps/web/prototype/src/main.js"></script>
+</head>
+
+<body>
+  <a class="skip" href="#stage">Skip to the map</a>
+
+  <header class="bar">
+    <a class="brand" href="/" aria-label="VYRON, reset the map">
+      <span id="brand-mark" aria-hidden="true"></span>
+      <span class="wordmark">VYRON</span>
+    </a>
+    <a class="page-link bar-repository" href="/repository.html">Repository</a>
+    <a class="page-link bar-repository" href="/dependencies.html">Dependencies</a>
+    <a class="page-link bar-repository" href="/compare.html">Compare</a>
+
+    <search class="search">
+      <form id="search-form" autocomplete="off">
+        <label class="sr-only" for="search">Search technologies</label>
+        <span class="search-icon" id="search-icon" aria-hidden="true"></span>
+        <input id="search" name="q" type="text" role="combobox" aria-expanded="false" aria-controls="search-results"
+          aria-autocomplete="list" aria-activedescendant="" placeholder="Search technologies, companies, platforms"
+          maxlength="100" spellcheck="false" autocapitalize="off" autocomplete="off" enterkeyhint="search" />
+        <kbd class="search-hint" aria-hidden="true">Ctrl K</kbd>
+        <ul id="search-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
+        <p id="search-status" class="sr-only" role="status" aria-live="polite"></p>
+      </form>
+    </search>
+
+    <div class="views" role="group" aria-label="View">
+      <button type="button" id="view-map" aria-pressed="true">Map</button>
+      <button type="button" id="view-outline" aria-pressed="false">Outline</button>
+    </div>
+
+    <button type="button" class="layers-toggle" id="layers-toggle" aria-expanded="false" aria-controls="rail"
+      title="Layers">
+      <span id="layers-icon" aria-hidden="true"></span>
+      <span>Layers</span>
+    </button>
+  </header>
+
+  <div class="workspace" id="workspace">
+    <aside class="rail" id="rail" aria-label="Clusters, kinds and line styles">
+      <button type="button" class="icon-button rail-close" id="rail-close" aria-label="Close layers"
+        title="Close layers"></button>
+      <nav class="rail-pages" aria-label="Other pages">
+        <a class="page-link" href="/repository.html">Repository</a>
+        <p class="note">Look up a public GitHub repository.</p>
+        <a class="page-link" href="/dependencies.html">Dependencies</a>
+        <p class="note">Read what a PyPI or npm package depends on.</p>
+        <a class="page-link" href="/compare.html">Compare</a>
+        <p class="note">Compare two packages or two GitHub repositories side by side.</p>
+      </nav>
+      <div id="rail-body"></div>
+    </aside>
+
+    <main class="main" id="main">
+      <section class="stage" id="stage" aria-label="Map" tabindex="-1">
+        <p class="state" id="stage-state" role="status">Loading the map…</p>
+        <p class="stage-hint" id="stage-hint" hidden>Select an entity or a region to see how it connects.</p>
+        <p class="url-notice" id="url-notice" role="status" hidden></p>
+      </section>
+      <section class="outline" id="outline" aria-labelledby="outline-title" hidden></section>
+      <section class="time" id="time" aria-label="Timeline" hidden></section>
+    </main>
+
+    <aside class="dossier" id="dossier" aria-label="Details" aria-live="polite" data-empty="true"></aside>
+  </div>
+
+  <footer class="status">
+    <p id="footer-counts" role="status"></p>
+    <p id="footer-notice"></p>
+  </footer>
+
+  <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+  <noscript>
+    <p class="noscript">VYRON needs JavaScript to draw the map. The text outline of the same data is not available
+      without it either, because it is built from the API.</p>
+  </noscript>
+</body>
+
+</html>

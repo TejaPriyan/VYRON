@@ -1,0 +1,39 @@
+# VYRON crawler and AI answer-engine policy
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+# Generative & Answer Engine crawlers (GEO / AEO)
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+Sitemap: /sitemap.xml
+# LLM discovery manifest: /llms.txt

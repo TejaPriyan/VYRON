@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0e14" />
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Explore live PyPI and npm package dependencies one package at a time in VYRON, with an interactive layered graph, release date history, provenance, and JSON export." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VYRON" />
+    <meta property="og:title" content="VYRON — Package Dependency Graph & Release History" />
+    <meta property="og:description" content="Read what a PyPI or npm package declares it depends on, grow the graph on demand, and inspect registry release dates with provenance." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="VYRON — Package Dependency Graph & Release History" />
+    <meta name="twitter:description" content="Live PyPI and npm dependency graph and release timeline with exact source URLs." />
+    <title>VYRON package dependencies</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/ld+json" href="/schema.jsonld" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM and Answer Engine summary" />
+    <link rel="stylesheet" href="/tokens.css" />
+    <link rel="stylesheet" href="/prototype.css" />
+    <script type="module" src="/js/apps/web/prototype/src/dependencies.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#reading">Skip to the reading</a>
+
+    <header class="bar">
+      <a class="brand" href="/" aria-label="VYRON, back to the map">
+        <span id="brand-mark" aria-hidden="true"></span>
+        <span class="wordmark">VYRON</span>
+      </a>
+      <a class="page-link" href="/">Map</a>
+      <a class="page-link" href="/repository.html">Repository</a>
+      <span class="page-link page-current" aria-current="page">Dependencies</span>
+      <a class="page-link" href="/compare.html">Compare</a>
+
+      <form class="repo-form" id="dep-form" autocomplete="off">
+        <label class="sr-only" for="dep-registry">Registry</label>
+        <select id="dep-registry" name="registry" class="registry-pick">
+          <option value="pypi">PyPI</option>
+          <option value="npm">npm</option>
+        </select>
+        <label class="sr-only" for="dep-input">Package name</label>
+        <input
+          id="dep-input"
+          class="package-input"
+          name="package"
+          type="text"
+          placeholder="package name or a link to its page"
+          maxlength="300"
+          spellcheck="false"
+          autocapitalize="off"
+          autocomplete="off"
+          enterkeyhint="go"
+        />
+        <button type="submit" class="primary" id="dep-submit">Read</button>
+      </form>
+    </header>
+
+    <main class="repo-main" id="dep-main">
+      <section class="repo-reading dep-reading" id="reading" aria-label="Package dependencies" tabindex="-1"></section>
+    </main>
+
+    <footer class="status">
+      <p id="dep-notice">
+        Each package is read from PyPI or npm when you open it. VYRON keeps an answer for about ten minutes and nothing is stored in your browser.
+      </p>
+    </footer>
+
+    <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+    <noscript><p class="noscript">VYRON needs JavaScript to read a package, because the page asks the API for it.</p></noscript>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "body": {
+    "Assembly": 9607617,
+    "Awk": 84736,
+    "C": 1481998372,
+    "C++": 191265,
+    "CMake": 495,
+    "CSS": 1491,
+    "Clojure": 2727,
+    "Gherkin": 10839,
+    "Jinja": 36976,
+    "Lex": 64812,
+    "Linker Script": 10017,
+    "M4": 3329,
+    "MATLAB": 2482,
+    "Makefile": 3047490,
+    "Perl": 1118587,
+    "Python": 5204517,
+    "RPC": 4632,
+    "Roff": 103428,
+    "Rust": 7260161,
+    "SWIG": 6319,
+    "Shell": 6623446,
+    "SmPL": 177554,
+    "UnrealScript": 16071,
+    "Yacc": 111756,
+    "sed": 379
+  },
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"457736c297cc4bad75baacc32e8ed3ceab41ed51100789a0a10ca4bf0c5fd32b\"",
+    "last-modified": "Mon, 02 Nov 2026 10:29:24 GMT",
+    "x-github-api-version-selected": "2022-11-28",
+    "x-github-media-type": "github.v3; format=json",
+    "x-ratelimit-limit": "60",
+    "x-ratelimit-remaining": "52",
+    "x-ratelimit-reset": "1793619158",
+    "x-ratelimit-resource": "core",
+    "x-ratelimit-used": "8"
+  },
+  "request": "/repos/torvalds/linux/languages",
+  "status": 200
+}

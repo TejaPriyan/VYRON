@@ -1,0 +1,59 @@
+VYRON live GitHub check
+  target:  https://api.github.com (the real GitHub)
+  token:   not set (GitHub allows 60 requests an hour)
+
+Reaching GitHub
+  PASS  GitHub's quota answers in the API's schema
+        60 of 60 requests left until 2026-11-03T14:02:21Z
+
+pallets/flask
+  PASS  the analysis route answers 200
+  PASS  the answer matches the API's own response schema
+  PASS  it is labelled 'sourced'
+  PASS  GitHub's repository is the one asked for
+  PASS  the first read is fresh (it came from GitHub, not a cache)
+  PASS  the evidence URLs are GitHub's API URLs
+  PASS  'fetched_at' is within five minutes of now
+        pallets/flask: 74,940 stars, 17,293 forks, 4 open issues and pull requests, default branch main, license BSD-3-Clause, 4 languages, last push 2026-10-30T15:05:22Z
+  PASS  a second request answers 200
+  PASS  the second request is served from VYRON's cache, with the same 'fetched_at'
+  PASS  the second request did not use any of GitHub's quota
+
+vyron-check-owner-that-does-not-exist/no-such-repository (should not exist)
+  PASS  a repository that does not exist answers 404 not_found
+
+pallets/flask: the page's own sequence, on a fresh cache
+  The page shows 'Live' for a read from GitHub and 'Confirmed' when everything was unchanged.
+  Waits are 65 s (real); VYRON treats a copy under 60 s old as current.
+
+  step 1: analyse the repository
+        GET /repos/pallets/flask  (asked outright)  ->  200, 56 left
+        GET /repos/pallets/flask/languages  (asked outright)  ->  200, 55 left
+  PASS  step 1: the analysis route answers 200
+  PASS  step 1: the label 'fresh' is the one GitHub's answers justify ('fresh')
+
+  waiting 65 s
+
+  step 2: load the contributors and release (the repository copy is now over a minute old)
+        GET /repos/pallets/flask  (asked if it changed)  ->  304, 54 left
+        GET /repos/pallets/flask/contributors?per_page=10  (asked outright)  ->  200, 53 left
+        GET /repos/pallets/flask/releases/latest  (asked outright)  ->  200, 52 left
+  PASS  step 2: the activity route answers 200
+  PASS  step 2: the label is 'fresh' (the page says 'Live'): the contributors and release were first reads
+  PASS  step 2: the label 'fresh' is the one GitHub's answers justify ('fresh')
+  PASS  step 2: the repository copy was confirmed with a conditional request, not downloaded again
+
+  waiting 65 s
+
+  step 3: load the contributors and release again
+        GET /repos/pallets/flask  (asked if it changed)  ->  304, 51 left
+        GET /repos/pallets/flask/contributors?per_page=10  (asked if it changed)  ->  304, 50 left
+        GET /repos/pallets/flask/releases/latest  (asked if it changed)  ->  304, 49 left
+  PASS  step 3: the activity route answers 200
+  PASS  step 3: the label 'revalidated' is the one GitHub's answers justify ('revalidated')
+  PASS  step 3: every copy VYRON held was confirmed with a conditional request, not downloaded again
+        answered 304 (unchanged): /repos/pallets/flask, /repos/pallets/flask/contributors?per_page=10, /repos/pallets/flask/releases/latest
+        quota: 56 left after the first request, 49 after the last, 8 requests sent (reported, not judged)
+
+RESULT: PASS, 21 checks against api.github.com. The live path is VERIFIED for what was checked here (the repositories above, on this date, from this machine); nothing else is.
+exit code: 0

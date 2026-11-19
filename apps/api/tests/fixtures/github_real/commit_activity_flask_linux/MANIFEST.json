@@ -1,0 +1,30 @@
+{
+  "authenticated": false,
+  "captured_at": "2026-11-04T10:01:04+00:00",
+  "data": "REAL GITHUB DATA",
+  "files": [
+    "rate_limit.json",
+    "repos__pallets__flask.json",
+    "repos__pallets__flask__languages.json",
+    "repos__torvalds__linux.json",
+    "repos__torvalds__linux__languages.json",
+    "repos__vyron-check-owner-that-does-not-exist__no-such-repository.json",
+    "repos__pallets__flask__stats__commit_activity__attempt-1.json",
+    "repos__pallets__flask__stats__commit_activity__attempt-2.json",
+    "repos__pallets__flask__stats__commit_activity__attempt-3.json",
+    "repos__pallets__flask__stats__commit_activity__attempt-4.json",
+    "repos__torvalds__linux__stats__commit_activity__attempt-1.json"
+  ],
+  "note": "Response headers are limited to an allow-list; no credential is ever written here.",
+  "source": "https://api.github.com",
+  "stats": {
+    "endpoint": "/stats/commit_activity",
+    "max_attempts": 6,
+    "repositories": [
+      "pallets/flask",
+      "torvalds/linux"
+    ],
+    "wait_seconds": 5.0
+  },
+  "tool": "scripts/live_github_check.py"
+}
