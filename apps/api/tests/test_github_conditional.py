@@ -90,7 +90,12 @@ class CachedGetTest(unittest.IsolatedAsyncioTestCase):
 
     async def get(self, script: Script, **kwargs: object) -> object:
         return await cached_get(
-            self.cache, self.key, script, now=lambda: NOW, sleep=no_sleep, **kwargs  # type: ignore[arg-type]
+            self.cache,
+            self.key,
+            script,
+            now=lambda: NOW,
+            sleep=no_sleep,
+            **kwargs,  # type: ignore[arg-type]
         )
 
     async def test_miss_then_revalidate_with_304(self) -> None:
@@ -154,9 +159,7 @@ class CachedGetTest(unittest.IsolatedAsyncioTestCase):
             await self.get(Script(OSError("down")), max_retries=1)
         await self.get(Script(RawResponse(200, {"etag": '"v1"'}, BODY)))
         with self.assertRaises(GitHubRateLimitedError):
-            await self.get(
-                Script(RawResponse(429, {"retry-after": "9999"}, b"")), serve_stale_on_error=False
-            )
+            await self.get(Script(RawResponse(429, {"retry-after": "9999"}, b"")), serve_stale_on_error=False)
 
     async def test_not_found_is_never_served_stale(self) -> None:
         await self.get(Script(RawResponse(200, {"etag": '"v1"'}, BODY)))
@@ -188,7 +191,12 @@ class AsOfTest(unittest.IsolatedAsyncioTestCase):
 
     async def get(self, script: Script, **kwargs: object):  # type: ignore[no-untyped-def]
         return await cached_get(
-            self.cache, self.key, script, now=lambda: self.now, sleep=no_sleep, **kwargs  # type: ignore[arg-type]
+            self.cache,
+            self.key,
+            script,
+            now=lambda: self.now,
+            sleep=no_sleep,
+            **kwargs,  # type: ignore[arg-type]
         )
 
     async def test_a_read_just_made_is_as_of_now_and_neither_stale_nor_revalidated(self) -> None:

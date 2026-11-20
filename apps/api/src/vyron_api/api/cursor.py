@@ -48,9 +48,7 @@ def _b64d(text: str) -> bytes:
 
 def fingerprint(operation_id: str, filters: Mapping[str, Any]) -> str:
     """Stable short hash of the operation and its filter values (never of limit or cursor)."""
-    canonical = json.dumps(
-        {"op": operation_id, "filters": filters}, sort_keys=True, separators=(",", ":"), default=str
-    )
+    canonical = json.dumps({"op": operation_id, "filters": filters}, sort_keys=True, separators=(",", ":"), default=str)
     return _b64e(hashlib.sha256(canonical.encode("utf-8")).digest()[:12])
 
 

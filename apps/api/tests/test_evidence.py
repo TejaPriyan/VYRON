@@ -167,9 +167,9 @@ class TimelineTest(unittest.TestCase):
         event = self.make(occurred_on=date(2030, 1, 1))
         with self.assertRaises(FutureEventNotLabelledError):
             event.check_labelled_for(self.TODAY)
-        self.make(
-            occurred_on=date(2030, 1, 1), provenance=Provenance.PREDICTED, is_prediction=True
-        ).check_labelled_for(self.TODAY)
+        self.make(occurred_on=date(2030, 1, 1), provenance=Provenance.PREDICTED, is_prediction=True).check_labelled_for(
+            self.TODAY
+        )
 
     def test_prediction_flag_must_match_provenance(self) -> None:
         with self.assertRaises(ValueError):

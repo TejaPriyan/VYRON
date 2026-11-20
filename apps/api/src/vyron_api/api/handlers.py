@@ -31,9 +31,7 @@ async def get_meta(service: CatalogService, path: Params, query: Params) -> Resu
 
 
 async def list_entities(service: CatalogService, path: Params, query: Params) -> Result:
-    return 200, await service.list_entities(
-        kinds=_kinds(query["kind"]), limit=query["limit"], cursor=query["cursor"]
-    )
+    return 200, await service.list_entities(kinds=_kinds(query["kind"]), limit=query["limit"], cursor=query["cursor"])
 
 
 async def list_technologies(service: CatalogService, path: Params, query: Params) -> Result:

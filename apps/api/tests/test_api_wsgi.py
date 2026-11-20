@@ -15,11 +15,11 @@ from test_api_app import SAMPLES, get
 from vyron_api.api import limits
 from vyron_api.api.app import SECURITY_HEADERS
 from vyron_api.api.bootstrap import build_seed_application
+from vyron_api.api.clientip import select_client_ip
 from vyron_api.api.hostcheck import LOOPBACK_HOSTS
 from vyron_api.api.routes import OPERATIONS
 from vyron_api.api.schemas import COMPONENTS
 from vyron_api.api.validate import validate
-from vyron_api.api.clientip import select_client_ip
 from vyron_api.api.wsgi import make_dev_server
 from vyron_api.devserver import StartupError, configure
 from vyron_api.devserver import main as devserver_main

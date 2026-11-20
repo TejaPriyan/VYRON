@@ -89,8 +89,11 @@ class IntoAnEmptyGraph(unittest.TestCase):
         service.ingest_pypi("flask", pkg=flask_package(), retrieved_at=NOW)
         db = copy_into_sqlite(service.graph, service)
         self.addCleanup(db.close)
-        dependency_evidence = [ev for ev in service.evidence.values() if ev.entity_id != service.graph.find_entity(
-            EntityKind.LIBRARY, "flask").id]  # type: ignore[union-attr]
+        dependency_evidence = [
+            ev
+            for ev in service.evidence.values()
+            if ev.entity_id != service.graph.find_entity(EntityKind.LIBRARY, "flask").id
+        ]  # type: ignore[union-attr]
         self.assertEqual(len(dependency_evidence), 3)
         db.conn.executemany("DELETE FROM evidence WHERE id = ?", [(ev.id,) for ev in dependency_evidence])
         problems = db.verify_integrity()

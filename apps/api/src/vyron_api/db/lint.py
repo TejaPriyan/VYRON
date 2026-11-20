@@ -449,9 +449,7 @@ def _lint_table(schema: Schema, table: Table, problems: list[str]) -> None:
             and column.default.lower().startswith("now()")
         ):
             problems.append(f"{name}.{stamp}: must be timestamptz NOT NULL DEFAULT now()")
-    if has_updated and not any(
-        t_table == name and fn == "set_updated_at" for _, t_table, fn in schema.triggers
-    ):
+    if has_updated and not any(t_table == name and fn == "set_updated_at" for _, t_table, fn in schema.triggers):
         problems.append(f"{name}: has updated_at but no BEFORE UPDATE trigger calling set_updated_at()")
 
     covered = _covered_leading_columns(schema, table)
@@ -470,12 +468,8 @@ def _lint_table(schema: Schema, table: Table, problems: list[str]) -> None:
             if index.table == name and index.unique:
                 plain = [_PLAIN_COLUMN_RE.match(c.strip()) for c in index.columns]
                 includes_pk = all(plain) and pk <= {m.group(1).lower() for m in plain if m}
-                if not includes_pk and not (
-                    index.predicate and _SOFT_DELETE_PREDICATE_RE.search(index.predicate)
-                ):
-                    problems.append(
-                        f"{name}: unique index {index.name} must be partial WHERE deleted_at IS NULL"
-                    )
+                if not includes_pk and not (index.predicate and _SOFT_DELETE_PREDICATE_RE.search(index.predicate)):
+                    problems.append(f"{name}: unique index {index.name} must be partial WHERE deleted_at IS NULL")
 
     for column in table.columns.values():
         values = schema.enums.get(column.type_name)
@@ -499,9 +493,7 @@ def _enum_literals(expression: str, column: str) -> list[str]:
     return found
 
 
-def _lint_foreign_key(
-    schema: Schema, table: Table, fk: ForeignKey, covered: set[str], problems: list[str]
-) -> None:
+def _lint_foreign_key(schema: Schema, table: Table, fk: ForeignKey, covered: set[str], problems: list[str]) -> None:
     label = f"{table.name}({', '.join(fk.columns)}) -> {fk.ref_table}"
     if fk.on_delete is None:
         problems.append(f"{label}: state ON DELETE explicitly (CASCADE, RESTRICT or SET NULL)")

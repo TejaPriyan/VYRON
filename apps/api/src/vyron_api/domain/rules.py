@@ -10,9 +10,7 @@ from __future__ import annotations
 from vyron_api.domain.entities import EntityKind as K
 from vyron_api.domain.entities import RelationType as R
 
-_TECH = frozenset(
-    {K.TECHNOLOGY, K.LANGUAGE, K.FRAMEWORK, K.LIBRARY, K.DATABASE, K.PLATFORM, K.API, K.AI_MODEL}
-)
+_TECH = frozenset({K.TECHNOLOGY, K.LANGUAGE, K.FRAMEWORK, K.LIBRARY, K.DATABASE, K.PLATFORM, K.API, K.AI_MODEL})
 _ORG = frozenset({K.COMPANY, K.ORGANIZATION})
 _REPO = frozenset({K.REPOSITORY})
 _ANY = frozenset(K)
@@ -48,8 +46,6 @@ class InvalidRelationshipError(ValueError):
 def check_relationship_endpoints(rel_type: R, source_kind: K, target_kind: K) -> None:
     sources, targets = ENDPOINT_RULES[rel_type]
     if source_kind not in sources:
-        raise InvalidRelationshipError(
-            f"{rel_type.value} cannot start at a {source_kind.value} entity"
-        )
+        raise InvalidRelationshipError(f"{rel_type.value} cannot start at a {source_kind.value} entity")
     if target_kind not in targets:
         raise InvalidRelationshipError(f"{rel_type.value} cannot end at a {target_kind.value} entity")

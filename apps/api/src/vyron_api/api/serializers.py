@@ -63,9 +63,7 @@ def timeline_event(item: TimelineEvent) -> dict[str, Any]:
     }
 
 
-def entity_list(
-    items: Iterable[Entity], *, limit: int, total: int, next_cursor: str | None
-) -> dict[str, Any]:
+def entity_list(items: Iterable[Entity], *, limit: int, total: int, next_cursor: str | None) -> dict[str, Any]:
     entities = list(items)
     return {
         "items": [entity(e) for e in entities],
@@ -132,8 +130,7 @@ def graph_overview(overview: GraphOverview, extra_provenances: Iterable[Provenan
             {"entity": entity(r.entity), "score": round(r.score, SCORE_DIGITS)} for r in overview.top_entities
         ],
         "clusters": [
-            {"id": c.id, "label": c.label, "size": c.size, "member_ids": list(c.member_ids)}
-            for c in overview.clusters
+            {"id": c.id, "label": c.label, "size": c.size, "member_ids": list(c.member_ids)} for c in overview.clusters
         ],
         "score_method": "pagerank",
         "score_provenance": Provenance.ESTIMATED.value,

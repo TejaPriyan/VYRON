@@ -229,8 +229,11 @@ def normalize_release(payload: Any, repo: RepoRef) -> LatestRelease:
         name = _CONTROL_RE.sub(" ", name).strip() or None
     url = payload.get("html_url")
     prefix = f"https://github.com/{repo.owner}/{repo.repo}/releases/".lower()
-    page_ok = isinstance(url, str) and len(url) <= 300 and url.lower().startswith(prefix) and bool(
-        _RELEASE_URL_RE.fullmatch(url)
+    page_ok = (
+        isinstance(url, str)
+        and len(url) <= 300
+        and url.lower().startswith(prefix)
+        and bool(_RELEASE_URL_RE.fullmatch(url))
     )
     return LatestRelease(
         tag_name=tag,

@@ -105,7 +105,7 @@ class LiveGitHubProvider:
         base_backoff: float = 0.5,
         clock: Callable[[], float] = time.time,
         sleep: Sleeper = asyncio.sleep,
-        jitter: Callable[[], float] = lambda: random.uniform(0.0, 0.25),
+        jitter: Callable[[], float] = lambda: random.uniform(0.0, 0.25),  # noqa: S311
     ) -> None:
         self._transport = transport
         self._cache = cache

@@ -124,9 +124,7 @@ class AnalysisTest(ProviderCase):
     async def test_one_changed_and_one_confirmed_resource_is_fresh_not_nothing_changed(self) -> None:
         newer = ok(repo_payload(stargazers_count=1300), etag='"v2"')
         not_modified = RawResponse(304, {"x-ratelimit-remaining": "57"}, b"")
-        transport = FakeTransport(
-            {REPO: [ok(repo_payload()), newer], LANGS: [ok(languages_payload()), not_modified]}
-        )
+        transport = FakeTransport({REPO: [ok(repo_payload()), newer], LANGS: [ok(languages_payload()), not_modified]})
         provider = self.provider(transport)
         await provider.analyze_repository(FIXTURE_REF)
         self.clock.now = T0 + 120
@@ -286,7 +284,7 @@ class BudgetTest(ProviderCase):
         transport = self.healthy()
         provider = self.provider(transport, budget=RateLimitBudget(reserve=10, now=self.clock))
         await provider.analyze_repository(FIXTURE_REF)  # fills the cache; the quota still looks healthy
-        provider._budget.update(  # noqa: SLF001  (simulate a later response that showed the quota nearly gone)
+        provider._budget.update(
             {"x-ratelimit-limit": "60", "x-ratelimit-remaining": "3", "x-ratelimit-reset": str(RESET)}
         )
         self.clock.now = T0 + 120

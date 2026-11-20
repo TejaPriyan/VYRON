@@ -125,9 +125,7 @@ async def send_with_retry(
         if decision.retry:
             if decision.wait_seconds > max_wait_seconds:
                 if limited:
-                    raise GitHubRateLimitedError(
-                        "GitHub rate limit reached; retry later", decision.wait_seconds
-                    )
+                    raise GitHubRateLimitedError("GitHub rate limit reached; retry later", decision.wait_seconds)
                 raise GitHubUnavailableError("GitHub is failing; retry later")
             await sleep(decision.wait_seconds)
             attempt += 1

@@ -93,10 +93,7 @@ def decide_retry(
     if status in _RATE_LIMIT_STATUSES:
         state = parse_rate_limit_headers(headers)
         limited = (
-            status == 429
-            or state.retry_after_seconds is not None
-            or state.exhausted
-            or "rate limit" in message.lower()
+            status == 429 or state.retry_after_seconds is not None or state.exhausted or "rate limit" in message.lower()
         )
         if not limited:
             return RetryDecision(False, 0.0, "forbidden")

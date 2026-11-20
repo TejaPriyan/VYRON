@@ -110,9 +110,7 @@ def _evidence_ids(raw: Any, field: str) -> list[str]:
     return ids
 
 
-def _resolve_citations(
-    raw_ids: list[str], allowed: Collection[str]
-) -> tuple[Provenance, tuple[str, ...], list[str]]:
+def _resolve_citations(raw_ids: list[str], allowed: Collection[str]) -> tuple[Provenance, tuple[str, ...], list[str]]:
     valid: list[str] = []
     rejected: list[str] = []
     for evidence_id in raw_ids:
@@ -133,9 +131,7 @@ def _decode(raw: str) -> dict[str, Any]:
     if fenced:
         text = fenced.group("body").strip()
     try:
-        data = json.loads(
-            text, object_pairs_hook=_reject_duplicate_keys, parse_constant=_reject_constant
-        )
+        data = json.loads(text, object_pairs_hook=_reject_duplicate_keys, parse_constant=_reject_constant)
     except json.JSONDecodeError as exc:
         raise ResearchOutputError("model output is not valid JSON") from exc
     except RecursionError as exc:
@@ -164,9 +160,7 @@ def parse_research_output(raw: str, allowed_evidence_ids: Collection[str]) -> Re
         text = _clean_text(entry.get("text"), f"claims[{index}].text", max_chars=MAX_TEXT_CHARS)
         confidence = entry.get("confidence")
         if confidence is not None and (
-            isinstance(confidence, bool)
-            or not isinstance(confidence, int | float)
-            or not 0.0 <= confidence <= 1.0
+            isinstance(confidence, bool) or not isinstance(confidence, int | float) or not 0.0 <= confidence <= 1.0
         ):
             raise ResearchOutputError(f"claims[{index}].confidence must be a number from 0 to 1")
         provenance, valid = resolve(_evidence_ids(entry.get("evidence_ids"), f"claims[{index}]"))

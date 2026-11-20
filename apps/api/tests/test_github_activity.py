@@ -87,9 +87,7 @@ class TheContributorList(unittest.TestCase):
 
     def test_the_list_is_ordered_by_contributions_and_ties_keep_githubs_order(self) -> None:
         payload = [person("low", 1), person("tie-first", 9), person("high", 50), person("tie-second", 9)]
-        self.assertEqual(
-            [c.login for c in normalize_contributors(payload)], ["high", "tie-first", "tie-second", "low"]
-        )
+        self.assertEqual([c.login for c in normalize_contributors(payload)], ["high", "tie-first", "tie-second", "low"])
 
     def test_it_is_cut_to_the_limit(self) -> None:
         payload = [person(f"user{i}", 100 - i) for i in range(30)]
@@ -209,9 +207,7 @@ class ActivityCase(unittest.IsolatedAsyncioTestCase):
         self.sleeps.append(seconds)
 
     def provider(self, transport: FakeTransport) -> LiveGitHubProvider:
-        return LiveGitHubProvider(
-            transport, InMemoryTTLCache(), clock=self.clock, sleep=self.sleep, jitter=lambda: 0.0
-        )
+        return LiveGitHubProvider(transport, InMemoryTTLCache(), clock=self.clock, sleep=self.sleep, jitter=lambda: 0.0)
 
     @staticmethod
     def script(**overrides: Any) -> dict[str, Any]:
@@ -496,9 +492,7 @@ class TheRoute(unittest.TestCase):
         response, body = get(app, ACTIVITY_URL)
         self.assertEqual(response.status, 200, body)
         self.assertEqual(validate(body, COMPONENTS["RepositoryActivity"], COMPONENTS), [])
-        self.assertEqual(
-            set(body["contributors"][0]), {"login", "contributions", "is_bot", "profile_url"}
-        )
+        self.assertEqual(set(body["contributors"][0]), {"login", "contributions", "is_bot", "profile_url"})
         self.assertEqual(body["contributors"][0]["profile_url"], "https://github.com/fixture-person-a")
         self.assertEqual([c["is_bot"] for c in body["contributors"]], [False, False, True])
         self.assertIsNone(body["contributors"][2]["profile_url"])
@@ -506,9 +500,7 @@ class TheRoute(unittest.TestCase):
         text = json.dumps(body)
         for private in ("avatars.githubusercontent", "node_id", "site_admin", "Release notes are never read"):
             self.assertNotIn(private, text)
-        self.assertEqual(
-            set(body["latest_release"]), {"tag_name", "name", "published_at", "prerelease", "html_url"}
-        )
+        self.assertEqual(set(body["latest_release"]), {"tag_name", "name", "published_at", "prerelease", "html_url"})
 
     def test_no_release_is_null_and_no_contributors_is_stated_not_implied(self) -> None:
         script = ActivityCase.script(**{CONTRIBUTORS: NO_CONTENT, RELEASE: error(404, "Not Found")})

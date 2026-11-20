@@ -98,9 +98,15 @@ def render_seed_sql() -> str:
         _insert(
             "timeline_events",
             (
-                "id", "entity_id", "occurred_on", "date_precision", "title", "event_type",
-                "provenance", "is_prediction",
-            ),  # fmt: skip
+                "id",
+                "entity_id",
+                "occurred_on",
+                "date_precision",
+                "title",
+                "event_type",
+                "provenance",
+                "is_prediction",
+            ),
             [
                 (
                     quote(ev.id),

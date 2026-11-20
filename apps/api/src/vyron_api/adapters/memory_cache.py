@@ -8,9 +8,7 @@ from collections.abc import Callable
 class InMemoryTTLCache:
     """Process-local TTL + LRU cache for tests and as the fallback when Redis is down."""
 
-    def __init__(
-        self, max_entries: int = 1024, clock: Callable[[], float] = time.monotonic
-    ) -> None:
+    def __init__(self, max_entries: int = 1024, clock: Callable[[], float] = time.monotonic) -> None:
         if max_entries < 1:
             raise ValueError("max_entries must be at least 1")
         self._max_entries = max_entries

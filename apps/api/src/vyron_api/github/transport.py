@@ -95,9 +95,7 @@ class UrllibGitHubTransport:
             raise ValueError("path must be an absolute GitHub API path")
         return self._base + path_or_url
 
-    async def get(
-        self, path_or_url: str, extra_headers: Mapping[str, str] | None = None
-    ) -> RawResponse:
+    async def get(self, path_or_url: str, extra_headers: Mapping[str, str] | None = None) -> RawResponse:
         url = self.url_for(path_or_url)
         headers = dict(self._headers)
         for name, value in (extra_headers or {}).items():
@@ -109,7 +107,7 @@ class UrllibGitHubTransport:
     def _get_blocking(self, url: str, headers: dict[str, str]) -> RawResponse:
         request = urllib.request.Request(url, headers=headers, method="GET")  # noqa: S310
         try:
-            with self._opener.open(request, timeout=self._timeout) as response:  # noqa: S310
+            with self._opener.open(request, timeout=self._timeout) as response:
                 return self._read(response.status, response.headers, response)
         except urllib.error.HTTPError as error:
             with error:

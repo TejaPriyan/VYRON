@@ -1,5 +1,6 @@
 import random
 import unittest
+from typing import ClassVar
 
 from vyron_api.graph import algorithms as alg
 
@@ -25,9 +26,7 @@ class BfsTest(unittest.TestCase):
 
     def test_depths_respect_max_depth(self) -> None:
         self.assertEqual(alg.bfs_depths(self.graph, "a", 1), {"a": 0, "b": 1, "e": 1})
-        self.assertEqual(
-            alg.bfs_depths(self.graph, "a", 9), {"a": 0, "b": 1, "e": 1, "c": 2, "d": 3}
-        )
+        self.assertEqual(alg.bfs_depths(self.graph, "a", 9), {"a": 0, "b": 1, "e": 1, "c": 2, "d": 3})
 
     def test_depth_zero_is_just_the_start(self) -> None:
         self.assertEqual(alg.bfs_depths(self.graph, "a", 0), {"a": 0})
@@ -69,9 +68,7 @@ class ShortestPathTest(unittest.TestCase):
 class ComponentsTest(unittest.TestCase):
     def test_components_sorted_largest_first(self) -> None:
         graph = adj([("a", "b"), ("b", "c"), ("x", "y")], extra=("solo",))
-        self.assertEqual(
-            alg.connected_components(graph), [["a", "b", "c"], ["x", "y"], ["solo"]]
-        )
+        self.assertEqual(alg.connected_components(graph), [["a", "b", "c"], ["x", "y"], ["solo"]])
 
     def test_empty_graph(self) -> None:
         self.assertEqual(alg.connected_components({}), [])
@@ -104,7 +101,7 @@ class PageRankTest(unittest.TestCase):
 
 
 class CommunitiesTest(unittest.TestCase):
-    EDGES = [
+    EDGES: ClassVar[list[tuple[str, str]]] = [
         ("a", "b"), ("a", "c"), ("a", "d"), ("b", "c"), ("b", "d"), ("c", "d"),
         ("e", "f"), ("e", "g"), ("e", "h"), ("f", "g"), ("f", "h"), ("g", "h"),
         ("d", "e"),
@@ -129,9 +126,7 @@ class CommunitiesTest(unittest.TestCase):
         self.assertEqual(result["z"], "z")
 
     def test_edgeless_graph(self) -> None:
-        self.assertEqual(
-            alg.modularity_communities({"a": set(), "b": set()}), {"a": "a", "b": "b"}
-        )
+        self.assertEqual(alg.modularity_communities({"a": set(), "b": set()}), {"a": "a", "b": "b"})
 
 
 if __name__ == "__main__":

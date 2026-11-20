@@ -54,9 +54,7 @@ class NormalizeRepositoryTest(unittest.TestCase):
         self.assertFalse(snap.archived or snap.is_fork)
 
     def test_nullable_fields(self) -> None:
-        snap = normalize_repository(
-            variant(description=None, language=None, license=None, pushed_at=None), FETCHED
-        )
+        snap = normalize_repository(variant(description=None, language=None, license=None, pushed_at=None), FETCHED)
         self.assertIsNone(snap.description)
         self.assertIsNone(snap.primary_language)
         self.assertIsNone(snap.license_spdx)
@@ -133,9 +131,7 @@ class NormalizeRepositoryTest(unittest.TestCase):
             variant(created_at="2010-04-06T11:11:59"),
         ]
         for payload in bad:
-            with self.subTest(payload=str(payload)[:70]), self.assertRaises(
-                MalformedGitHubPayloadError
-            ):
+            with self.subTest(payload=str(payload)[:70]), self.assertRaises(MalformedGitHubPayloadError):
                 normalize_repository(payload, FETCHED)
 
     def test_fetched_at_must_be_aware(self) -> None:
@@ -170,9 +166,7 @@ class NormalizeLanguagesTest(unittest.TestCase):
             {"x" * 300: 1},
             {f"L{i}": 1 for i in range(MAX_LANGUAGES + 1)},
         ):
-            with self.subTest(payload=str(payload)[:50]), self.assertRaises(
-                MalformedGitHubPayloadError
-            ):
+            with self.subTest(payload=str(payload)[:50]), self.assertRaises(MalformedGitHubPayloadError):
                 normalize_languages(payload)
 
 

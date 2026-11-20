@@ -51,7 +51,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         REQUESTS.append({"path": self.path, "headers": {k.lower(): v for k, v in self.headers.items()}})
         if self.path == "/repos/a/b":
             if self.headers.get("If-None-Match") == '"v1"':
@@ -250,18 +250,16 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
 
     def test_tls_verification_is_required_and_wired_into_the_opener(self) -> None:
         transport = UrllibGitHubTransport()
-        context = transport._context  # noqa: SLF001 - the property under test is private by design
+        context = transport._context
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
         self.assertTrue(context.check_hostname)
-        handlers = [h for h in transport._opener.handlers if isinstance(h, urllib.request.HTTPSHandler)]  # noqa: SLF001
+        handlers = [h for h in transport._opener.handlers if isinstance(h, urllib.request.HTTPSHandler)]
         self.assertEqual(len(handlers), 1, "exactly one HTTPS handler")
-        self.assertIs(handlers[0]._context, context, "the opener must use the verifying context")  # noqa: SLF001
+        self.assertIs(handlers[0]._context, context, "the opener must use the verifying context")
 
     def test_url_for_only_accepts_api_paths_on_the_configured_host(self) -> None:
         transport = UrllibGitHubTransport()
-        self.assertEqual(
-            transport.url_for("/repos/a/b?per_page=100"), "https://api.github.com/repos/a/b?per_page=100"
-        )
+        self.assertEqual(transport.url_for("/repos/a/b?per_page=100"), "https://api.github.com/repos/a/b?per_page=100")
         self.assertEqual(
             transport.url_for("https://api.github.com/repos/a/b?page=2"),
             "https://api.github.com/repos/a/b?page=2",
@@ -281,7 +279,6 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
         ):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 transport.url_for(bad)
-
 
 
 class QuietServerTest(unittest.TestCase):

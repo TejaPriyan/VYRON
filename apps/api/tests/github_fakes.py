@@ -63,9 +63,12 @@ def repo_payload(**overrides: Any) -> dict[str, Any]:
         "forks_count": 56,
         "open_issues_count": 7,
         "license": {
-            "key": "mit", "name": "MIT License", "spdx_id": "MIT",
-            "url": "https://api.github.com/licenses/mit", "node_id": "MDc6TGljZW5zZTEz",
-        },  # fmt: skip
+            "key": "mit",
+            "name": "MIT License",
+            "spdx_id": "MIT",
+            "url": "https://api.github.com/licenses/mit",
+            "node_id": "MDc6TGljZW5zZTEz",
+        },
         "topics": ["fixture", "example"],
         "visibility": "public",
         "forks": 56,

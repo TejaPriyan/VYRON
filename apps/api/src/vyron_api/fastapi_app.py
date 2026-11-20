@@ -76,8 +76,6 @@ def create_app(settings: Settings | None = None, application: Application | None
             ),
         )
         response = await core.handle(core_request)
-        return FastAPIResponse(
-            content=response.body, status_code=response.status, headers=dict(response.headers)
-        )
+        return FastAPIResponse(content=response.body, status_code=response.status, headers=dict(response.headers))
 
     return app

@@ -9,6 +9,7 @@ body while it computes, a repository it has not computed recently needed about s
 202 included, costs a request. So the provider never waits; it reports "computing" and the reader asks again.
 """
 
+import itertools
 import json
 import unittest
 from collections.abc import Mapping, Sequence
@@ -49,9 +50,7 @@ LANGS = f"{REPO}/languages"
 STATS = f"{REPO}/stats/commit_activity"
 URL = f"/api/v1/github/repositories/{FIXTURE_REF.owner}/{FIXTURE_REF.repo}/commit-activity"
 # What GitHub really sent while it was computing: 202, JSON content type, an empty object, no validator.
-COMPUTING = RawResponse(
-    202, {"content-type": "application/json; charset=utf-8", "x-ratelimit-remaining": "49"}, b"{}"
-)
+COMPUTING = RawResponse(202, {"content-type": "application/json; charset=utf-8", "x-ratelimit-remaining": "49"}, b"{}")
 NO_CONTENT = RawResponse(204, {"etag": 'W/"empty"', "x-ratelimit-remaining": "50"}, b"")
 NOT_MODIFIED = RawResponse(304, {"x-ratelimit-remaining": "40"}, b"")
 
@@ -95,7 +94,7 @@ class TheWeeklyCounts(unittest.TestCase):
         self.assertTrue(all(len(w.days) == 7 and w.total == sum(w.days) for w in weeks))
         quiet = [index for index, w in enumerate(weeks) if w.total == 0]
         self.assertEqual(quiet, [6, 19, 32, 45])  # a quiet week is kept as a week of zero, never dropped
-        gaps = {(b.week_start - a.week_start).days for a, b in zip(weeks, weeks[1:], strict=False)}
+        gaps = {(b.week_start - a.week_start).days for a, b in itertools.pairwise(weeks)}
         self.assertEqual(gaps, {7})
 
     def test_fields_nobody_asked_for_are_ignored_and_never_kept(self) -> None:
@@ -318,7 +317,6 @@ class TheRead(unittest.IsolatedAsyncioTestCase):
         provider, transport = self.provider(self.script())
         await provider.analyze_repository(self.ref)
         self.assertEqual(transport.paths(), [REPO, LANGS])  # commit activity is opt-in: never part of the analysis
-
 
 
 class TheRoute(unittest.TestCase):

@@ -180,9 +180,7 @@ def error_body(error: ApiError, request_id: str) -> dict[str, Any]:
         "request_id": request_id,
     }
     if error.details:
-        body["details"] = [
-            {"field": issue.field, "issue": issue.issue} for issue in error.details[:MAX_DETAILS]
-        ]
+        body["details"] = [{"field": issue.field, "issue": issue.issue} for issue in error.details[:MAX_DETAILS]]
     return {"error": body}
 
 

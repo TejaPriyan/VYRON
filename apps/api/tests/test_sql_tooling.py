@@ -208,9 +208,7 @@ class LinterCatchesProblemsTest(unittest.TestCase):
                 updated_at timestamptz NOT NULL DEFAULT now());
             CREATE TRIGGER other_set_updated_at BEFORE UPDATE ON other
                 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-        """ + self.child(
-            "c text REFERENCES other (code) ON DELETE CASCADE", "CREATE INDEX i ON child (c);"
-        )
+        """ + self.child("c text REFERENCES other (code) ON DELETE CASCADE", "CREATE INDEX i ON child (c);")
         self.assertProblem(extra, "not a primary key or unique")
 
     def test_referencing_a_table_created_later(self) -> None:
@@ -260,23 +258,17 @@ class LinterCatchesProblemsTest(unittest.TestCase):
             "CREATE TABLE s (id uuid PRIMARY KEY, email text, deleted_at timestamptz,"
             " created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()"
         )
-        trigger = (
-            "CREATE TRIGGER s_set_updated_at BEFORE UPDATE ON s"
-            " FOR EACH ROW EXECUTE FUNCTION set_updated_at();"
-        )
+        trigger = "CREATE TRIGGER s_set_updated_at BEFORE UPDATE ON s FOR EACH ROW EXECUTE FUNCTION set_updated_at();"
         self.assertProblem(soft + ", UNIQUE (email));" + trigger, "soft-deleted")
         self.assertProblem(soft + "); CREATE UNIQUE INDEX s_email ON s (email);" + trigger, "partial")
         self.assertEqual(
-            self.problems(
-                soft + "); CREATE UNIQUE INDEX s_email ON s (email) WHERE deleted_at IS NULL;" + trigger
-            ),
+            self.problems(soft + "); CREATE UNIQUE INDEX s_email ON s (email) WHERE deleted_at IS NULL;" + trigger),
             [],
         )
 
     def test_enum_drift_and_bad_literals(self) -> None:
-        sql = (
-            "CREATE TYPE mood AS ENUM ('happy', 'sad');"
-            + self.child("m mood NOT NULL DEFAULT 'angry' CHECK (m IN ('happy', 'meh'))")
+        sql = "CREATE TYPE mood AS ENUM ('happy', 'sad');" + self.child(
+            "m mood NOT NULL DEFAULT 'angry' CHECK (m IN ('happy', 'meh'))"
         )
         problems = self.problems(sql)
         self.assertTrue(any("default 'angry'" in p for p in problems), problems)
@@ -444,9 +436,7 @@ class SeedSqlTest(unittest.TestCase):
         self.assertEqual(SEED_FILE.read_text(encoding="utf-8"), render_seed_sql())
 
     def test_seed_sql_matches_the_schema_and_is_labelled(self) -> None:
-        schema = build_schema(
-            [(p.name, p.read_text(encoding="utf-8")) for p in sorted(MIGRATIONS_DIR.glob("*.sql"))]
-        )
+        schema = build_schema([(p.name, p.read_text(encoding="utf-8")) for p in sorted(MIGRATIONS_DIR.glob("*.sql"))])
         self.assertEqual(lint_seed_sql(schema, render_seed_sql()), [])
         text = render_seed_sql()
         self.assertIn("Development seed data", text)

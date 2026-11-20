@@ -43,9 +43,7 @@ def bfs_depths(adjacency: Mapping[str, set[str]], start: str, max_depth: int) ->
     return depths
 
 
-def shortest_path(
-    adjacency: Mapping[str, set[str]], source: str, target: str, max_depth: int
-) -> list[str] | None:
+def shortest_path(adjacency: Mapping[str, set[str]], source: str, target: str, max_depth: int) -> list[str] | None:
     """Fewest-hop path (ties broken by smallest ids), or None if none within ``max_depth``."""
     if source not in adjacency:
         raise KeyError(source)
@@ -131,9 +129,7 @@ def pagerank(
     return rank
 
 
-def modularity_communities(
-    adjacency: Mapping[str, set[str]], *, max_passes: int = 50
-) -> dict[str, str]:
+def modularity_communities(adjacency: Mapping[str, set[str]], *, max_passes: int = 50) -> dict[str, str]:
     """Greedy modularity local-moving (the first phase of Louvain), fully deterministic.
 
     Returns ``node -> community id`` where the id is the smallest-id node that seeded the community

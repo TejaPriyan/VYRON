@@ -97,9 +97,7 @@ def parse_query_params(route: Route, query_string: str) -> dict[str, Any]:
     if len(query_string.encode("utf-8", "replace")) > MAX_QUERY_STRING_BYTES:
         raise validation_error([FieldIssue("query", "query string is too long")])
     try:
-        raw = parse_qs(
-            query_string, keep_blank_values=True, max_num_fields=MAX_QUERY_FIELDS, errors="strict"
-        )
+        raw = parse_qs(query_string, keep_blank_values=True, max_num_fields=MAX_QUERY_FIELDS, errors="strict")
     except (ValueError, UnicodeDecodeError) as exc:
         raise validation_error([FieldIssue("query", "query string is malformed")]) from exc
 

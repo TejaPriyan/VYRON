@@ -7,6 +7,7 @@ keep their stored direction.
 
 from __future__ import annotations
 
+import itertools
 from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass
 
@@ -33,9 +34,7 @@ class Cluster:
 
 
 class InMemoryGraph:
-    def __init__(
-        self, entities: Iterable[Entity] = (), relationships: Iterable[Relationship] = ()
-    ) -> None:
+    def __init__(self, entities: Iterable[Entity] = (), relationships: Iterable[Relationship] = ()) -> None:
         self._entities: dict[str, Entity] = {}
         self._by_slug: dict[tuple[EntityKind, str], str] = {}
         self._relationships: dict[tuple[str, str, RelationType], Relationship] = {}
@@ -62,9 +61,7 @@ class InMemoryGraph:
         check_relationship_endpoints(relationship.type, source.kind, target.kind)
         key = (relationship.source_id, relationship.target_id, relationship.type)
         if key in self._relationships:
-            raise ValueError(
-                f"duplicate relationship: {source.slug} {relationship.type.value} {target.slug}"
-            )
+            raise ValueError(f"duplicate relationship: {source.slug} {relationship.type.value} {target.slug}")
         self._relationships[key] = relationship
 
     # ---- inspection -----------------------------------------------------------------------
@@ -80,7 +77,7 @@ class InMemoryGraph:
         entity_id = self._by_slug.get((kind, slug))
         return self._entities.get(entity_id) if entity_id is not None else None
 
-    def has_relationship(self, source_id: str, target_id: str, type: RelationType) -> bool:  # noqa: A002
+    def has_relationship(self, source_id: str, target_id: str, type: RelationType) -> bool:
         return (source_id, target_id, type) in self._relationships
 
     def entities(self) -> list[Entity]:
@@ -128,9 +125,7 @@ class InMemoryGraph:
     async def get(self, entity_id: str) -> Entity | None:
         return self._entities.get(entity_id)
 
-    async def list_entities(
-        self, *, kinds: Collection[EntityKind] | None, limit: int, offset: int
-    ) -> EntityPage:
+    async def list_entities(self, *, kinds: Collection[EntityKind] | None, limit: int, offset: int) -> EntityPage:
         if limit < 1 or offset < 0:
             raise ValueError("limit must be positive and offset must not be negative")
         selected = [e for e in self.entities() if kinds is None or e.kind in kinds]
@@ -140,9 +135,7 @@ class InMemoryGraph:
         entity_id = self._by_slug.get((kind, slug))
         return self._entities[entity_id] if entity_id else None
 
-    async def search(
-        self, query: str, *, kinds: Collection[EntityKind] | None, limit: int, offset: int
-    ) -> EntityPage:
+    async def search(self, query: str, *, kinds: Collection[EntityKind] | None, limit: int, offset: int) -> EntityPage:
         if limit < 1 or offset < 0:
             raise ValueError("limit must be positive and offset must not be negative")
         scored = []
@@ -208,21 +201,15 @@ class InMemoryGraph:
         ]
         return Subgraph(entities=entities, relationships=relationships, truncated=truncated)
 
-    async def shortest_path(
-        self, source_id: str, target_id: str, *, max_depth: int
-    ) -> Sequence[Relationship] | None:
+    async def shortest_path(self, source_id: str, target_id: str, *, max_depth: int) -> Sequence[Relationship] | None:
         self._require(source_id)
         self._require(target_id)
         path = algorithms.shortest_path(self._adjacency(), source_id, target_id, max_depth)
         if path is None:
             return None
         hops: list[Relationship] = []
-        for left, right in zip(path, path[1:], strict=False):
-            candidates = [
-                r
-                for r in self._relationships.values()
-                if {r.source_id, r.target_id} == {left, right}
-            ]
+        for left, right in itertools.pairwise(path):
+            candidates = [r for r in self._relationships.values() if {r.source_id, r.target_id} == {left, right}]
             hops.append(min(candidates, key=lambda r: (r.source_id, r.type.value)))
         return hops
 
@@ -233,9 +220,7 @@ class InMemoryGraph:
             raise EntityNotFoundError(entity_id)
         return entity
 
-    def _adjacency(
-        self, relation_types: Collection[RelationType] | None = None
-    ) -> algorithms.Adjacency:
+    def _adjacency(self, relation_types: Collection[RelationType] | None = None) -> algorithms.Adjacency:
         edges = [
             (r.source_id, r.target_id)
             for r in self._relationships.values()

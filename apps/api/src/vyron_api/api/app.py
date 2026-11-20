@@ -231,4 +231,3 @@ class Application:
             **error_headers(error),
         }
         return Response(error.status, headers, payload)
-

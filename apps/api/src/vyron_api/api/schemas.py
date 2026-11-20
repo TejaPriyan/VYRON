@@ -105,9 +105,7 @@ def nullable(schema: Schema) -> Schema:
     return {"anyOf": [schema, {"type": "null"}]}
 
 
-def obj(
-    properties: Mapping[str, Schema], *, optional: Sequence[str] = (), description: str | None = None
-) -> Schema:
+def obj(properties: Mapping[str, Schema], *, optional: Sequence[str] = (), description: str | None = None) -> Schema:
     """A closed object. Every property is required unless named in ``optional``."""
     unknown = set(optional) - set(properties)
     if unknown:

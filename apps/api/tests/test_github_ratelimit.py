@@ -76,9 +76,7 @@ class DecideRetryTest(unittest.TestCase):
         self.assertEqual(waits, [MIN_SECONDARY_WAIT_SECONDS * f for f in (1, 2, 4)])
 
     def test_403_with_rate_limit_message_is_retried(self) -> None:
-        decision = decide_retry(
-            403, {}, attempt=0, now=NOW, message="You have exceeded a secondary rate limit."
-        )
+        decision = decide_retry(403, {}, attempt=0, now=NOW, message="You have exceeded a secondary rate limit.")
         self.assertTrue(decision.retry)
         self.assertEqual(decision.reason, "secondary-limit-backoff")
 

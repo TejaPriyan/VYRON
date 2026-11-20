@@ -52,9 +52,7 @@ class EntityPage:
 class EntityRepository(Protocol):
     async def get(self, entity_id: str) -> Entity | None: ...
 
-    async def list_entities(
-        self, *, kinds: Collection[EntityKind] | None, limit: int, offset: int
-    ) -> EntityPage:
+    async def list_entities(self, *, kinds: Collection[EntityKind] | None, limit: int, offset: int) -> EntityPage:
         """Entities ordered by name (case-insensitive), then id, so paging is stable."""
 
     async def get_by_slug(self, kind: EntityKind, slug: str) -> Entity | None: ...

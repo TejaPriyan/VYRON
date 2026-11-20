@@ -141,16 +141,23 @@ class SeedGraphTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             {e.slug for e in one_hop.entities},
             {
-                "python", "numpy", "pytorch", "tensorflow", "pandas", "flask",
-                "fastapi", "scikit-learn", "python-software-foundation", "django", "jax",
+                "python",
+                "numpy",
+                "pytorch",
+                "tensorflow",
+                "pandas",
+                "flask",
+                "fastapi",
+                "scikit-learn",
+                "python-software-foundation",
+                "django",
+                "jax",
             },
         )
         self.assertFalse(one_hop.truncated)
         for r in one_hop.relationships:
             self.assertIn(r.source_id, {e.id for e in one_hop.entities})
-        only_uses = await self.graph.neighbors(
-            self.python, depth=1, relation_types={R.USES}, limit=50
-        )
+        only_uses = await self.graph.neighbors(self.python, depth=1, relation_types={R.USES}, limit=50)
         self.assertEqual(
             {e.slug for e in only_uses.entities},
             {"python", "pytorch", "tensorflow", "jax", "pandas", "scikit-learn"},
@@ -253,9 +260,7 @@ class TimelineStoreTest(unittest.IsolatedAsyncioTestCase):
         self.store = InMemoryTimeline(seed_timeline())
 
     async def between(self, start, end, *, include_predictions=False, limit=100, offset=0):
-        return await self.store.between(
-            start, end, include_predictions=include_predictions, limit=limit, offset=offset
-        )
+        return await self.store.between(start, end, include_predictions=include_predictions, limit=limit, offset=offset)
 
     async def test_range_filter_and_ordering(self) -> None:
         page = await self.between(2010, 2015)

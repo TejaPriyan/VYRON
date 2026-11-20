@@ -28,7 +28,7 @@ class ApiDocsTest(unittest.TestCase):
             self.assertIn(f"| `{code.value}` |", DOC)
 
     def test_documented_numbers_match_the_code(self) -> None:
-        self.assertIn(f"`limit` (1–{limits.MAX_PAGE_SIZE}, default {limits.DEFAULT_PAGE_SIZE})", DOC)
+        self.assertIn(f"`limit` (1\u2013{limits.MAX_PAGE_SIZE}, default {limits.DEFAULT_PAGE_SIZE})", DOC)
         self.assertIn(f"{limits.MAX_GRAPH_NODES} nodes and {limits.MAX_GRAPH_EDGES:,} relationships", DOC)
         self.assertIn(f"Body over {limits.MAX_BODY_BYTES // 1024} KiB", DOC)
         self.assertIn(f"expire after {DEFAULT_TTL_SECONDS // 3600} hours", DOC)

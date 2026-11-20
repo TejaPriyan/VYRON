@@ -119,9 +119,7 @@ async def cached_get(
         return CachedResult(_from_entry(entry), entry.stored_at, from_cache=True)
 
     try:
-        response = await send_with_retry(
-            send, extra_headers=conditional_headers(entry), now=now, **retry_options
-        )
+        response = await send_with_retry(send, extra_headers=conditional_headers(entry), now=now, **retry_options)
     except (GitHubUnavailableError, GitHubRateLimitedError):
         if entry is not None and serve_stale_on_error:
             return CachedResult(_from_entry(entry), entry.stored_at, from_cache=True, stale=True)
@@ -139,7 +137,5 @@ async def cached_get(
     # Only a 200 is stored. A 204 has no body to serve again, so keeping one would turn "nothing to list" into
     # an empty 200 the next time it was read from the cache.
     if response.status == 200 and (etag or last_modified) and len(response.body) <= MAX_CACHED_BODY_BYTES:
-        await cache.set(
-            key, encode_entry(CacheEntry(etag, last_modified, response.body, current)), ttl_seconds
-        )
+        await cache.set(key, encode_entry(CacheEntry(etag, last_modified, response.body, current)), ttl_seconds)
     return CachedResult(response, current)

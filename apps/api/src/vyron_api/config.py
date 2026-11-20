@@ -140,9 +140,7 @@ def _flag(environ: Mapping[str, str], name: str, problems: list[str]) -> bool:
     return False
 
 
-def _secret(
-    environ: Mapping[str, str], name: str, problems: list[str], *, min_length: int = 1
-) -> Secret | None:
+def _secret(environ: Mapping[str, str], name: str, problems: list[str], *, min_length: int = 1) -> Secret | None:
     value = _get(environ, name)
     if value is None:
         return None

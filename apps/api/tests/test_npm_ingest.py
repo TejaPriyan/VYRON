@@ -5,7 +5,6 @@ import unittest
 from datetime import UTC, datetime
 
 from registry_fakes import FakeTransport
-
 from vyron_api.adapters.memory_graph import InMemoryGraph
 from vyron_api.domain.entities import EntityKind, RelationType
 from vyron_api.domain.provenance import Provenance

@@ -13,12 +13,12 @@ from vyron_api.api import limits
 from vyron_api.api.app import SECURITY_HEADERS, Application, Request, Response
 from vyron_api.api.cursor import CursorCodec
 from vyron_api.api.handlers import HANDLERS
+from vyron_api.api.hostcheck import LOOPBACK_HOSTS
 from vyron_api.api.ratelimit import DEFAULT_LIMITS, FixedWindowRateLimiter, Limit
 from vyron_api.api.routes import OPERATIONS, ROUTES, RateBucket, Status
 from vyron_api.api.schemas import COMPONENTS
 from vyron_api.api.validate import validate
 from vyron_api.domain.entities import Entity, EntityKind, Relationship, RelationType
-from vyron_api.api.hostcheck import LOOPBACK_HOSTS
 from vyron_api.domain.provenance import SEED_NOTICE, Provenance
 from vyron_api.github.normalize import MalformedGitHubPayloadError
 from vyron_api.providers.github import (
@@ -81,12 +81,8 @@ SAMPLES: dict[str, tuple[str, dict[str, Any]]] = {
     "timeline": ("/api/v1/timeline", {"start_year": 2000, "end_year": 2020}),
     "github_parse": ("/api/v1/github/parse", {"input": "vercel/next.js"}),
     "get_repository_analysis": (f"/api/v1/github/repositories/{FIXTURE_REF.owner}/{FIXTURE_REF.repo}", {}),
-    "get_repository_activity": (
-        f"/api/v1/github/repositories/{FIXTURE_REF.owner}/{FIXTURE_REF.repo}/activity", {}
-    ),
-    "get_commit_activity": (
-        f"/api/v1/github/repositories/{FIXTURE_REF.owner}/{FIXTURE_REF.repo}/commit-activity", {}
-    ),
+    "get_repository_activity": (f"/api/v1/github/repositories/{FIXTURE_REF.owner}/{FIXTURE_REF.repo}/activity", {}),
+    "get_commit_activity": (f"/api/v1/github/repositories/{FIXTURE_REF.owner}/{FIXTURE_REF.repo}/commit-activity", {}),
     "get_package_dependencies": ("/api/v1/registries/pypi/package", {"name": "fixture-web"}),
     "get_package_releases": ("/api/v1/registries/pypi/releases", {"name": "fixture-web"}),
     "get_github_rate_limit": ("/api/v1/github/rate-limit", {}),
@@ -336,16 +332,13 @@ class PaginationOverHttpTest(unittest.TestCase):
     def test_dense_neighbourhoods_are_capped_and_flagged(self) -> None:
         hub = Entity(entity_id(K.TECHNOLOGY, "hub"), K.TECHNOLOGY, "hub", "Hub", Provenance.SEED)
         spokes = [
-            Entity(entity_id(K.TECHNOLOGY, f"s{i}"), K.TECHNOLOGY, f"s{i}", f"S{i}", Provenance.SEED)
-            for i in range(60)
+            Entity(entity_id(K.TECHNOLOGY, f"s{i}"), K.TECHNOLOGY, f"s{i}", f"S{i}", Provenance.SEED) for i in range(60)
         ]
         graph = InMemoryGraph([hub, *spokes])
         for i, spoke in enumerate(spokes):
             graph.add_relationship(Relationship(hub.id, spoke.id, RelationType.RELATED_TO, Provenance.SEED))
             for other in spokes[i + 1 :]:
-                graph.add_relationship(
-                    Relationship(spoke.id, other.id, RelationType.RELATED_TO, Provenance.SEED)
-                )
+                graph.add_relationship(Relationship(spoke.id, other.id, RelationType.RELATED_TO, Provenance.SEED))
         self.assertGreater(graph.relationship_count, limits.MAX_GRAPH_EDGES)
         response, body = get(make_app(graph), f"/api/v1/entities/{hub.id}/neighbors", {"max_nodes": 300})
         self.assertEqual(response.status, 200)
@@ -448,8 +441,12 @@ class BehaviourTest(unittest.TestCase):
         self.assertEqual(
             titles,
             [
-                "CUDA released", "GitHub launched", "Go language announced",
-                "Redis released", "MongoDB 1.0 released", "Node.js released",
+                "CUDA released",
+                "GitHub launched",
+                "Go language announced",
+                "Redis released",
+                "MongoDB 1.0 released",
+                "Node.js released",
             ],
         )
         years = [e["occurred_on"] for e in window["items"]]

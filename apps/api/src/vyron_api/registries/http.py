@@ -67,9 +67,7 @@ def fetch_json(
         if exc.code == 404:
             raise PackageNotFoundError(f"{what} has no such package") from None
         if exc.code == 429:
-            raise RegistryRateLimitedError(
-                f"{what} is limiting requests from this address; try again later"
-            ) from None
+            raise RegistryRateLimitedError(f"{what} is limiting requests from this address; try again later") from None
         if 300 <= exc.code < 400:
             raise RegistryError(f"{what} answered with a redirect, which is not followed") from None
         raise RegistryError(f"{what} answered HTTP {exc.code}") from None

@@ -47,6 +47,8 @@ def clean_requirement(text: str) -> str | None:
     if stripped.startswith("(") and stripped.endswith(")"):
         stripped = stripped[1:-1].strip()
     return stripped if _SAFE_REQUIREMENT.fullmatch(stripped) else None
+
+
 _SLUG_CLEAN = re.compile(r"[^a-z0-9]+")
 
 
@@ -88,9 +90,7 @@ def build_package_graph(
     retrieved_at: datetime,
 ) -> tuple[Entity, Source, Evidence, list[Entity], list[Relationship]]:
     """The package, the registry page it came from, one piece of evidence, and its DEPENDS_ON edges."""
-    main = Entity(
-        id=registry_entity_id(kind, slug), kind=kind, slug=slug, name=name, provenance=Provenance.SOURCED
-    )
+    main = Entity(id=registry_entity_id(kind, slug), kind=kind, slug=slug, name=name, provenance=Provenance.SOURCED)
     source = Source(
         id=registry_source_id(source_url),
         url=source_url,

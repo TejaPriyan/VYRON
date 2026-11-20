@@ -38,9 +38,7 @@ class RateLimitBudget:
             self._states.pop(resource, None)  # window has rolled over; stale state
             return
         if state.remaining <= self._reserve:
-            raise GitHubRateLimitedError(
-                f"{resource} rate-limit budget exhausted ({state.remaining} left)", wait + 1.0
-            )
+            raise GitHubRateLimitedError(f"{resource} rate-limit budget exhausted ({state.remaining} left)", wait + 1.0)
 
     def snapshot(self) -> dict[str, RateLimitState]:
         return dict(self._states)

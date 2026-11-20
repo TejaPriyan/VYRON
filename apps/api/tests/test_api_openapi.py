@@ -70,14 +70,13 @@ class RegistryTest(unittest.TestCase):
 
     def test_paths_are_versioned_or_system(self) -> None:
         for route in ROUTES:
-            self.assertTrue(
-                route.path.startswith("/api/v1/") or route.path.startswith("/health/"), route.path
-            )
+            self.assertTrue(route.path.startswith("/api/v1/") or route.path.startswith("/health/"), route.path)
 
     def test_no_two_routes_can_match_the_same_request(self) -> None:
-        samples = [
-            re.sub(r"\{\w+\}", "x", r.path) for r in ROUTES
-        ] + ["/api/v1/entities/by-slug/language/python", "/api/v1/entities/x/neighbors"]
+        samples = [re.sub(r"\{\w+\}", "x", r.path) for r in ROUTES] + [
+            "/api/v1/entities/by-slug/language/python",
+            "/api/v1/entities/x/neighbors",
+        ]
         for sample in samples:
             for method in ("GET", "POST", "PUT", "DELETE"):
                 matches = [r.operation_id for r in ROUTES if r.method == method and r.match(sample)]
@@ -143,9 +142,7 @@ class OpenApiStructureTest(unittest.TestCase):
 
     def test_all_routes_are_published(self) -> None:
         published = {
-            op["operationId"]: (method, path)
-            for path, item in DOC["paths"].items()
-            for method, op in item.items()
+            op["operationId"]: (method, path) for path, item in DOC["paths"].items() for method, op in item.items()
         }
         self.assertEqual(set(published), {r.operation_id for r in ROUTES})
         for route in ROUTES:
@@ -271,9 +268,7 @@ class OpenApiStructureTest(unittest.TestCase):
             "Reliability": "reliability",
         }  # fmt: skip
         for component, sql_name in sql_names.items():
-            self.assertEqual(
-                sorted(COMPONENTS[component]["enum"]), sorted(schema.enums[sql_name]), component
-            )
+            self.assertEqual(sorted(COMPONENTS[component]["enum"]), sorted(schema.enums[sql_name]), component)
 
 
 class ResponseSafetyTest(unittest.TestCase):

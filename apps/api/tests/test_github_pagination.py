@@ -9,8 +9,7 @@ from vyron_api.github.pagination import (
 
 API = "https://api.github.com/repositories/1/commits"
 TYPICAL = (
-    f'<{API}?page=1>; rel="prev", <{API}?page=3>; rel="next", '
-    f'<{API}?page=34>; rel="last", <{API}?page=1>; rel="first"'
+    f'<{API}?page=1>; rel="prev", <{API}?page=3>; rel="next", <{API}?page=34>; rel="last", <{API}?page=1>; rel="first"'
 )
 
 
@@ -24,7 +23,7 @@ class ParseLinkHeaderTest(unittest.TestCase):
         self.assertEqual(parse_link_header(f'<{API}?page=2>; rel="next"'), {"next": f"{API}?page=2"})
 
     def test_unquoted_rel_multiple_rels_and_case(self) -> None:
-        links = parse_link_header(f"<{API}?a=1>; rel=next, <{API}?b=2>; REL=\"first last\"")
+        links = parse_link_header(f'<{API}?a=1>; rel=next, <{API}?b=2>; REL="first last"')
         self.assertEqual(links["next"], f"{API}?a=1")
         self.assertEqual(links["first"], links["last"])
 

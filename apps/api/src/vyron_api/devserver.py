@@ -82,9 +82,7 @@ def main(argv: list[str] | None = None, environ: Mapping[str, str] | None = None
     parser = argparse.ArgumentParser(description=BANNER)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument(
-        "--no-github", action="store_true", help="do not call GitHub; the two GitHub routes answer 503"
-    )
+    parser.add_argument("--no-github", action="store_true", help="do not call GitHub; the two GitHub routes answer 503")
     parser.add_argument(
         "--no-registries", action="store_true", help="do not call PyPI or npm; the package route answers 503"
     )

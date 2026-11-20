@@ -218,19 +218,19 @@ class SqliteDatabase:
 
     def counts(self) -> dict[str, int]:
         """Return row counts for all core domain tables."""
-        tables = [
-            "entities",
-            "relationships",
-            "timeline_events",
-            "sources",
-            "evidence",
-            "relationship_evidence",
-            "entity_aliases",
-        ]
+        count_queries = {
+            "entities": "SELECT count(*) FROM entities",
+            "relationships": "SELECT count(*) FROM relationships",
+            "timeline_events": "SELECT count(*) FROM timeline_events",
+            "sources": "SELECT count(*) FROM sources",
+            "evidence": "SELECT count(*) FROM evidence",
+            "relationship_evidence": "SELECT count(*) FROM relationship_evidence",
+            "entity_aliases": "SELECT count(*) FROM entity_aliases",
+        }
         res: dict[str, int] = {}
-        for table in tables:
+        for table, query in count_queries.items():
             try:
-                (count,) = self.conn.execute(f"SELECT count(*) FROM {table}").fetchone()
+                (count,) = self.conn.execute(query).fetchone()
                 res[table] = count
             except sqlite3.OperationalError:
                 res[table] = 0

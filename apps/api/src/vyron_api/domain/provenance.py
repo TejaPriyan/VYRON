@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-
 SEED_NOTICE = "Development seed data. Not verified production facts."
 
 

@@ -5,7 +5,6 @@ import unittest
 from datetime import UTC, datetime
 
 from registry_fakes import FakeTransport
-
 from vyron_api.adapters.memory_graph import InMemoryGraph
 from vyron_api.domain.entities import EntityKind, RelationType
 from vyron_api.domain.provenance import Provenance
@@ -121,7 +120,8 @@ class Fetch(unittest.TestCase):
     def test_no_requirements_is_not_an_error(self) -> None:
         for value in (None, []):
             pkg = fetch_pypi_package(
-                "flask", transport=FakeTransport({FLASK_URL: flask_body(requires_dist=value)})  # type: ignore[arg-type]
+                "flask",
+                transport=FakeTransport({FLASK_URL: flask_body(requires_dist=value)}),  # type: ignore[arg-type]
             )
             self.assertEqual(pkg.dependencies, ())
 

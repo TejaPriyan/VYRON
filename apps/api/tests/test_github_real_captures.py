@@ -7,6 +7,7 @@ how VYRON reads and handles those answers. The figures they name (stars, sizes) 
 The captures were made by the project owner and relayed to me; I did not make the requests.
 """
 
+import itertools
 import json
 import unittest
 from collections.abc import Mapping, Sequence
@@ -20,11 +21,10 @@ from vyron_api.adapters.memory_cache import InMemoryTTLCache
 from vyron_api.api.schemas import COMPONENTS
 from vyron_api.api.validate import validate
 from vyron_api.github.budget import RateLimitBudget
-from vyron_api.github.normalize import normalize_rate_limit
+from vyron_api.github.normalize import normalize_commit_activity, normalize_rate_limit
 from vyron_api.github.provider import LiveGitHubProvider
 from vyron_api.github.retry import RawResponse
 from vyron_api.github.url import RepoRef
-from vyron_api.github.normalize import normalize_commit_activity
 from vyron_api.providers.github import (
     CacheStatus,
     CommitActivityStatus,
@@ -310,12 +310,14 @@ class AHugeRepositoryWithoutReleases(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self) -> None:
         self.clock = Clock()
-        self.transport = FakeTransport({
-            REPO_PATH: raw(LINUX, "repos__torvalds__linux.json"),
-            f"{REPO_PATH}/languages": raw(LINUX, "repos__torvalds__linux__languages.json"),
-            LIST_PATH: raw(LINUX, LIST_FILE),
-            RELEASE_PATH: raw(LINUX, RELEASE_FILE_LINUX),
-        })
+        self.transport = FakeTransport(
+            {
+                REPO_PATH: raw(LINUX, "repos__torvalds__linux.json"),
+                f"{REPO_PATH}/languages": raw(LINUX, "repos__torvalds__linux__languages.json"),
+                LIST_PATH: raw(LINUX, LIST_FILE),
+                RELEASE_PATH: raw(LINUX, RELEASE_FILE_LINUX),
+            }
+        )
         self.provider = provider_for(self.transport, self.clock)
         self.ref = RepoRef("torvalds", "linux")
 
@@ -481,7 +483,7 @@ class TheCommitActivityGitHubReallySent(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(len(body), 52)
                 self.assertTrue(all(set(week) == {"days", "total", "week"} for week in body))
                 self.assertTrue(all(len(week["days"]) == 7 and week["total"] == sum(week["days"]) for week in body))
-                self.assertEqual({b["week"] - a["week"] for a, b in zip(body, body[1:], strict=False)}, {604_800})
+                self.assertEqual({b["week"] - a["week"] for a, b in itertools.pairwise(body)}, {604_800})
                 self.assertTrue(all(week["week"] % 86_400 == 0 for week in body))  # midnight UTC, every one
         self.assertEqual(capture(STATS, LINUX_ATTEMPT)["headers"]["cache-control"], "public, max-age=60, s-maxage=60")
 
