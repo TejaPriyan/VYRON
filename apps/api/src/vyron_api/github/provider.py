@@ -268,7 +268,7 @@ class LiveGitHubProvider:
             # Asking for the quota is free and its headers are not used to update the budget.
             return await self._send("/rate_limit", headers, counted=False)
 
-        response = await send_with_retry(send, now=self._clock, **self._retry)  # type: ignore[arg-type]
+        response = await send_with_retry(send, now=self._clock, **self._retry)
         return normalize_rate_limit(response.json())
 
     # ---- reads --------------------------------------------------------------------------------
