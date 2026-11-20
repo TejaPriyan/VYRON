@@ -67,7 +67,8 @@ class Fetch(unittest.TestCase):
         self.assertEqual(pkg.dependencies, ("accepts", "body-parser", "cookie", "debug"))
 
     def test_no_dependencies_is_not_an_error(self) -> None:
-        for value in (None, {}):
+        empty: dict[str, str] = {}
+        for value in (None, empty):
             body = document(dependencies=value)
             pkg = fetch_npm_package("express", transport=FakeTransport({EXPRESS_URL: body}))  # type: ignore[arg-type]
             self.assertEqual(pkg.dependencies, ())

@@ -270,7 +270,12 @@ class TheRead(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((result.status, result.weeks), (CommitActivityStatus.NONE, ()))
 
     async def test_an_answer_that_is_not_the_documented_shape_is_an_error_not_a_chart(self) -> None:
-        for body in ({"weeks": []}, [{"days": [1], "total": 1, "week": FIRST_FIXTURE_WEEK}], "text"):
+        bad_bodies: tuple[object, ...] = (
+            {"weeks": []},
+            [{"days": [1], "total": 1, "week": FIRST_FIXTURE_WEEK}],
+            "text",
+        )
+        for body in bad_bodies:
             with self.subTest(body=repr(body)[:40]):
                 provider, _ = self.provider(self.script(stats_ok(body)))
                 with self.assertRaises(MalformedGitHubPayloadError):

@@ -53,7 +53,7 @@ NO_CONTENT = RawResponse(204, {"etag": '"empty"', "x-ratelimit-remaining": "50"}
 NOT_MODIFIED = RawResponse(304, {"x-ratelimit-remaining": "40"}, b"")
 
 
-def person(login: str, contributions: int, kind: str = "User", **extra: Any) -> dict[str, Any]:
+def person(login: Any, contributions: Any, kind: Any = "User", **extra: Any) -> dict[str, Any]:
     return {"login": login, "id": 1, "type": kind, "contributions": contributions, **extra}
 
 
@@ -181,7 +181,7 @@ class TheLatestRelease(unittest.TestCase):
         self.assertEqual(release.name, "Fix ture release")
 
     def test_wrong_shapes_are_refused(self) -> None:
-        for payload in (
+        bad_payloads: tuple[Any, ...] = (
             [],
             "x",
             release_payload(tag_name=""),
@@ -193,7 +193,8 @@ class TheLatestRelease(unittest.TestCase):
             release_payload(published_at="2026-09-01T12:00:00"),  # no timezone
             {k: v for k, v in release_payload().items() if k != "draft"},
             {k: v for k, v in release_payload().items() if k != "prerelease"},
-        ):
+        )
+        for payload in bad_payloads:
             with self.subTest(payload=str(payload)[:60]), self.assertRaises(MalformedGitHubPayloadError):
                 normalize_release(payload, FIXTURE_REF)
 

@@ -11,7 +11,7 @@ from vyron_api.api.errors import (
     validation_error,
 )
 from vyron_api.api.params import parse_path_params, parse_query_params
-from vyron_api.api.routes import OPERATIONS
+from vyron_api.api.routes import OPERATIONS, Route
 from vyron_api.domain.rules import InvalidRelationshipError
 from vyron_api.github.normalize import MalformedGitHubPayloadError
 from vyron_api.github.url import InvalidRepoReferenceError
@@ -33,7 +33,7 @@ NEIGHBORS = OPERATIONS["get_entity_neighbors"]
 UUID = "65f9394b-42af-5055-a3a8-72312e13e423"
 
 
-def issues_for(route, query: str) -> dict[str, str]:
+def issues_for(route: Route, query: str) -> dict[str, str]:
     with unittest.TestCase().assertRaises(ApiError) as caught:
         parse_query_params(route, query)
     return {i.field: i.issue for i in caught.exception.details}

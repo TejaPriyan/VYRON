@@ -89,11 +89,9 @@ class IntoAnEmptyGraph(unittest.TestCase):
         service.ingest_pypi("flask", pkg=flask_package(), retrieved_at=NOW)
         db = copy_into_sqlite(service.graph, service)
         self.addCleanup(db.close)
-        dependency_evidence = [
-            ev
-            for ev in service.evidence.values()
-            if ev.entity_id != service.graph.find_entity(EntityKind.LIBRARY, "flask").id
-        ]  # type: ignore[union-attr]
+        flask_entity = service.graph.find_entity(EntityKind.LIBRARY, "flask")
+        assert flask_entity is not None
+        dependency_evidence = [ev for ev in service.evidence.values() if ev.entity_id != flask_entity.id]
         self.assertEqual(len(dependency_evidence), 3)
         db.conn.executemany("DELETE FROM evidence WHERE id = ?", [(ev.id,) for ev in dependency_evidence])
         problems = db.verify_integrity()
@@ -124,8 +122,9 @@ class IntoTheSeedGraph(unittest.TestCase):
     def setUp(self) -> None:
         self.graph = build_seed_graph()
         self.service = RegistryIngestService(self.graph)
-        self.seed_flask = self.graph.find_entity(EntityKind.FRAMEWORK, "flask")
-        assert self.seed_flask is not None
+        seed_flask = self.graph.find_entity(EntityKind.FRAMEWORK, "flask")
+        assert seed_flask is not None
+        self.seed_flask = seed_flask
         self.before = self.graph.entity_count
 
     def test_the_existing_entity_is_reused_and_keeps_its_seed_label(self) -> None:

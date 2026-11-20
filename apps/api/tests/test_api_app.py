@@ -101,7 +101,9 @@ class ContractTest(unittest.TestCase):
             with self.subTest(operation=operation_id):
                 response, body = get(app, path, query)
                 self.assertEqual(response.status, 200, body)
-                schema = COMPONENTS[OPERATIONS[operation_id].response_schema]
+                schema_name = OPERATIONS[operation_id].response_schema
+                assert schema_name is not None
+                schema = COMPONENTS[schema_name]
                 self.assertEqual(validate(body, schema, COMPONENTS), [])
 
     def test_every_planned_route_answers_501_in_the_error_envelope(self) -> None:
@@ -213,18 +215,15 @@ class RoutingTest(unittest.TestCase):
 
     def test_authenticated_route_marked_implemented_fails_closed(self) -> None:
         from dataclasses import replace
+        from unittest import mock
 
         import vyron_api.api.app as app_module
 
         route = OPERATIONS["get_me"]
         leaked = replace(route, status=Status.IMPLEMENTED)
         app = make_app()
-        original = app_module.find_route
-        app_module.find_route = lambda method, path: (leaked, {})
-        try:
+        with mock.patch.object(app_module, "find_route", lambda method, path: (leaked, {})):
             response = asyncio.run(app.handle(Request("GET", route.path)))
-        finally:
-            app_module.find_route = original
         self.assertEqual(response.status, 401)
 
 
@@ -580,7 +579,10 @@ class GitHubRoutesTest(unittest.TestCase):
         with self.assertLogs("vyron.api", level="WARNING") as logs:
             get(app, ANALYSIS, **{"x-request-id": "trace-0123456789"})
         warning = logs.records[0]
-        self.assertEqual((warning.request_id, warning.operation_id), ("trace-0123456789", "get_repository_analysis"))
+        self.assertEqual(
+            (getattr(warning, "request_id", None), getattr(warning, "operation_id", None)),
+            ("trace-0123456789", "get_repository_analysis"),
+        )
         self.assertIn("blocked by gateway", warning.getMessage())  # the operator sees it; the caller does not
 
     def test_with_github_switched_off_both_routes_say_so_and_parsing_still_works(self) -> None:
@@ -638,7 +640,7 @@ class HostCheckTest(unittest.TestCase):
 class FailureHandlingTest(unittest.TestCase):
     def test_unavailable_graph_gives_503_and_degraded_readiness(self) -> None:
         class Down(InMemoryGraph):
-            async def list_entities(self, **kwargs: Any):
+            async def list_entities(self, **kwargs: Any) -> Any:
                 raise GraphUnavailableError("bolt://neo4j:7687 refused password=hunter2")
 
         app = make_app(Down(*(lambda g: (g.entities(), g.relationships()))(build_seed_graph())))
@@ -652,7 +654,7 @@ class FailureHandlingTest(unittest.TestCase):
 
     def test_unexpected_errors_are_500_without_leaking_and_are_logged(self) -> None:
         class Broken(InMemoryGraph):
-            async def search(self, *args: Any, **kwargs: Any):
+            async def search(self, *args: Any, **kwargs: Any) -> Any:
                 raise RuntimeError("SELECT * FROM users WHERE password = 'hunter2'")
 
         seed = build_seed_graph()
@@ -662,8 +664,8 @@ class FailureHandlingTest(unittest.TestCase):
         self.assertEqual((response.status, body["error"]["code"]), (500, "internal_error"))
         self.assertNotIn("hunter2", response.body.decode())
         self.assertNotIn("SELECT", response.body.decode())
-        self.assertEqual(logs.records[0].request_id, "trace-0123456789")
-        self.assertEqual(logs.records[0].operation_id, "search")
+        self.assertEqual(getattr(logs.records[0], "request_id", None), "trace-0123456789")
+        self.assertEqual(getattr(logs.records[0], "operation_id", None), "search")
 
     def test_request_logs_do_not_include_query_text(self) -> None:
         with self.assertLogs("vyron.api", level=logging.INFO) as logs:

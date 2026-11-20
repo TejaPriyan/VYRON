@@ -326,7 +326,13 @@ class RateLimitStatusTest(ProviderCase):
         self.assertEqual(transport.paths()[-1], "/rate_limit")
 
     async def test_a_malformed_quota_answer_is_refused(self) -> None:
-        for body in ([], {"resources": []}, {"resources": {}}, {"resources": {"core": {"limit": "x"}}}):
+        bad_bodies: tuple[object, ...] = (
+            [],
+            {"resources": []},
+            {"resources": {}},
+            {"resources": {"core": {"limit": "x"}}},
+        )
+        for body in bad_bodies:
             with self.subTest(body=body):
                 transport = FakeTransport({"/rate_limit": ok(body)})
                 with self.assertRaises(MalformedGitHubPayloadError):

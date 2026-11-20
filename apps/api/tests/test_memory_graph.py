@@ -19,6 +19,7 @@ from vyron_api.providers.graph import (
     EntityRepository,
     GraphRepository,
 )
+from vyron_api.providers.timeline import TimelinePage
 from vyron_api.seed.dev_seed import (
     SEED_NOTICE,
     build_seed_graph,
@@ -94,8 +95,12 @@ class SeedGraphTest(unittest.IsolatedAsyncioTestCase):
     def test_seed_is_valid_and_labelled(self) -> None:
         self.assertIn("seed", SEED_NOTICE.lower())
         self.assertGreaterEqual(len(seed_entities()), 15)
-        for item in (*seed_entities(), *seed_relationships(), *seed_timeline()):
-            self.assertIs(item.provenance, Provenance.SEED)
+        for entity in seed_entities():
+            self.assertIs(entity.provenance, Provenance.SEED)
+        for relationship in seed_relationships():
+            self.assertIs(relationship.provenance, Provenance.SEED)
+        for event in seed_timeline():
+            self.assertIs(event.provenance, Provenance.SEED)
         names = {e.name for e in seed_entities()}
         for required in (
             "Python", "JavaScript", "TypeScript", "React", "Next.js", "Node.js", "PostgreSQL",
@@ -198,7 +203,7 @@ class SeedGraphTest(unittest.IsolatedAsyncioTestCase):
         second = await self.graph.search("o", kinds=None, limit=2, offset=2)
         self.assertEqual(first.total, everything.total)
         self.assertEqual(
-            [e.id for e in first.items + list(second.items)],
+            [e.id for e in [*first.items, *second.items]],
             [e.id for e in everything.items[:4]],
         )
 
@@ -259,7 +264,15 @@ class TimelineStoreTest(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.store = InMemoryTimeline(seed_timeline())
 
-    async def between(self, start, end, *, include_predictions=False, limit=100, offset=0):
+    async def between(
+        self,
+        start: int | None,
+        end: int | None,
+        *,
+        include_predictions: bool = False,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> TimelinePage:
         return await self.store.between(start, end, include_predictions=include_predictions, limit=limit, offset=offset)
 
     async def test_range_filter_and_ordering(self) -> None:
@@ -283,9 +296,10 @@ class TimelineStoreTest(unittest.IsolatedAsyncioTestCase):
             collected.extend(e.id for e in page.items)
         self.assertEqual(collected, full)
         self.assertEqual((await self.between(None, None, offset=len(full))).items, [])
-        for bad in ({"limit": 0}, {"offset": -1}):
-            with self.assertRaises(ValueError):
-                await self.between(None, None, **bad)
+        with self.assertRaises(ValueError):
+            await self.between(None, None, limit=0)
+        with self.assertRaises(ValueError):
+            await self.between(None, None, offset=-1)
 
     async def test_predictions_are_opt_in(self) -> None:
         prediction = TimelineEvent(

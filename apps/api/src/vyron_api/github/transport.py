@@ -31,7 +31,7 @@ _TOKEN_RE = re.compile(r"^[\x21-\x7e]{1,255}$")
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, *args: object, **kwargs: object) -> None:  # type: ignore[override]
+    def redirect_request(self, *args: object, **kwargs: object) -> None:
         return None  # surface 3xx as a response instead of following it
 
 

@@ -11,7 +11,7 @@ END = "<!-- END GENERATED -->"
 def _schema_summary(param: Param) -> str:
     schema = param.schema
     if "$ref" in schema:
-        return schema["$ref"].rsplit("/", 1)[1]
+        return str(schema["$ref"]).rsplit("/", 1)[1]
     kind = schema.get("type", "string")
     if kind == "array":
         items = schema.get("items", {})

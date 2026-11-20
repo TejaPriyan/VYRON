@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from vyron_api.db.lint import build_schema, lint_migrations, lint_schema, lint_seed_sql
+from vyron_api.db.lint import Schema, build_schema, lint_migrations, lint_schema, lint_seed_sql
 from vyron_api.db.migrations import (
     Migration,
     MigrationError,
@@ -70,6 +70,9 @@ class SplitStatementsTest(unittest.TestCase):
 
 
 class RealMigrationsLintTest(unittest.TestCase):
+    files: list[tuple[str, str]]
+    schema: Schema
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.files = [(p.name, p.read_text(encoding="utf-8")) for p in sorted(MIGRATIONS_DIR.glob("*.sql"))]

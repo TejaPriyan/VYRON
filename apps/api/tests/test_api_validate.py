@@ -1,4 +1,6 @@
 import unittest
+from collections.abc import Mapping
+from typing import Any
 
 from vyron_api.api.schemas import COMPONENTS, array, enum_of, integer, nullable, obj, ref, string
 from vyron_api.api.validate import UnsupportedSchemaError, validate
@@ -6,7 +8,7 @@ from vyron_api.api.validate import UnsupportedSchemaError, validate
 C = COMPONENTS
 
 
-def ok(value, schema) -> bool:
+def ok(value: Any, schema: Mapping[str, Any]) -> bool:
     return validate(value, schema, C) == []
 
 

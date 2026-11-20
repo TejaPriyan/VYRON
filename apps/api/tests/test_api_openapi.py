@@ -1,6 +1,7 @@
 import json
 import re
 import unittest
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +29,7 @@ MIGRATIONS = ROOT / "infrastructure" / "database" / "migrations"
 DOC = build_openapi()
 
 
-def walk(node: Any):
+def walk(node: Any) -> Iterator[Any]:
     yield node
     if isinstance(node, dict):
         for value in node.values():
@@ -177,7 +178,7 @@ class OpenApiStructureTest(unittest.TestCase):
     def test_security_matches_auth(self) -> None:
         for route in ROUTES:
             operation = DOC["paths"][route.path][route.method.lower()]
-            expected = [{"sessionCookie": []}] if route.auth is Auth.SESSION else []
+            expected: list[dict[str, list[str]]] = [{"sessionCookie": []}] if route.auth is Auth.SESSION else []
             self.assertEqual(operation["security"], expected, route.operation_id)
             if route.auth is Auth.SESSION:
                 self.assertIn("401", operation["responses"])
@@ -198,9 +199,9 @@ class OpenApiStructureTest(unittest.TestCase):
         implemented_closure: set[str] = set()
         for route in ROUTES:
             if route.status is Status.IMPLEMENTED:
-                for name in (route.request_schema, route.response_schema):
-                    if name:
-                        implemented_closure |= referenced_schemas(name)
+                for schema_name in (route.request_schema, route.response_schema):
+                    if schema_name:
+                        implemented_closure |= referenced_schemas(schema_name)
         self.assertEqual(implemented_closure & PLANNED_COMPONENTS, set())
 
     def test_array_query_parameters_use_repeated_form_style(self) -> None:

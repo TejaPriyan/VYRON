@@ -20,7 +20,7 @@ import random
 import time
 from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
-from typing import Protocol
+from typing import Protocol, TypedDict
 
 from vyron_api.adapters.memory_cache import InMemoryTTLCache
 from vyron_api.github.budget import RateLimitBudget
@@ -91,6 +91,14 @@ def _overall_status(reads: Sequence[CachedResult], *, uncached_answers: int = 0)
     return CacheStatus.FRESH
 
 
+class _RetryKwargs(TypedDict):
+    max_retries: int
+    max_wait_seconds: float
+    base_backoff: float
+    sleep: Sleeper
+    jitter: Callable[[], float]
+
+
 class LiveGitHubProvider:
     def __init__(
         self,
@@ -113,7 +121,7 @@ class LiveGitHubProvider:
         self._fresh_for = fresh_for_seconds
         self._ttl = ttl_seconds
         self._clock = clock
-        self._retry = {
+        self._retry: _RetryKwargs = {
             "max_retries": max_retries,
             "max_wait_seconds": max_wait_seconds,
             "base_backoff": base_backoff,

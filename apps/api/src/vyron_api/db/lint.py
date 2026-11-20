@@ -441,12 +441,12 @@ def _lint_table(schema: Schema, table: Table, problems: list[str]) -> None:
     elif not has_updated and name not in APPEND_ONLY_TABLES:
         problems.append(f"{name}: has created_at but no updated_at (append-only tables must be listed)")
     for stamp in ("created_at", "updated_at"):
-        column = table.columns.get(stamp)
-        if column and not (
-            column.type_name == "timestamptz"
-            and column.not_null
-            and column.default is not None
-            and column.default.lower().startswith("now()")
+        stamp_column = table.columns.get(stamp)
+        if stamp_column and not (
+            stamp_column.type_name == "timestamptz"
+            and stamp_column.not_null
+            and stamp_column.default is not None
+            and stamp_column.default.lower().startswith("now()")
         ):
             problems.append(f"{name}.{stamp}: must be timestamptz NOT NULL DEFAULT now()")
     if has_updated and not any(t_table == name and fn == "set_updated_at" for _, t_table, fn in schema.triggers):
@@ -476,10 +476,10 @@ def _lint_table(schema: Schema, table: Table, problems: list[str]) -> None:
         if not values:
             continue
         for expression in table.checks:
-            for literal in _enum_literals(expression, column.name):
-                if literal not in values:
+            for enum_literal in _enum_literals(expression, column.name):
+                if enum_literal not in values:
                     problems.append(
-                        f"{name}: CHECK compares {column.name} with {literal!r}, "
+                        f"{name}: CHECK compares {column.name} with {enum_literal!r}, "
                         f"which is not a {column.type_name} value"
                     )
 

@@ -28,7 +28,7 @@ from vyron_api.devserver import main as devserver_main
 @contextmanager
 def running(**kwargs: Any) -> Iterator[int]:
     """A real server on a free port over the seed app, with a fixture GitHub provider unless told otherwise."""
-    app_kwargs = {k: kwargs.pop(k) for k in ("rate_limit", "allowed_hosts", "github") if k in kwargs}
+    app_kwargs: dict[str, Any] = {k: kwargs.pop(k) for k in ("rate_limit", "allowed_hosts", "github") if k in kwargs}
     app_kwargs.setdefault("github", FakeGitHubProvider())
     app_kwargs.setdefault("packages", FakePackageProvider())
     server = make_dev_server(build_seed_application(**app_kwargs), "127.0.0.1", 0, **kwargs)
@@ -60,7 +60,9 @@ class OverRealSocketsTest(unittest.TestCase):
             response, body = request(port, "GET", "/api/v1/meta")
         self.assertEqual(response.status, 200)
         self.assertEqual(response.getheader("Content-Type"), "application/json; charset=utf-8")
-        self.assertEqual(int(response.getheader("Content-Length")), len(body))
+        content_length = response.getheader("Content-Length")
+        assert content_length is not None
+        self.assertEqual(int(content_length), len(body))
         data = json.loads(body)
         self.assertEqual(validate(data, COMPONENTS["Meta"], COMPONENTS), [])
         self.assertEqual(data["data_mode"], "seed")
@@ -78,6 +80,7 @@ class OverRealSocketsTest(unittest.TestCase):
         with running() as port:
             first, _ = request(port, "GET", "/api/v1/entities?limit=3")
             etag = first.getheader("ETag")
+            assert etag is not None
             again, body = request(port, "GET", "/api/v1/entities?limit=3", headers={"If-None-Match": etag})
         self.assertEqual((again.status, body), (304, b""))
 
@@ -115,7 +118,9 @@ class OverRealSocketsTest(unittest.TestCase):
                 with self.subTest(operation=operation_id):
                     response, body = request(port, "GET", f"{path}?{urlencode(query, doseq=True)}")
                     self.assertEqual(response.status, 200, body)
-                    schema = COMPONENTS[OPERATIONS[operation_id].response_schema]
+                    schema_name = OPERATIONS[operation_id].response_schema
+                    assert schema_name is not None
+                    schema = COMPONENTS[schema_name]
                     self.assertEqual(validate(json.loads(body), schema, COMPONENTS), [])
 
     def test_rate_limit_over_http(self) -> None:

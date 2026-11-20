@@ -51,7 +51,8 @@ HEADER_ALLOW_LIST = {
 
 
 def capture(folder: Path, name: str) -> dict[str, Any]:
-    return json.loads((folder / name).read_text(encoding="utf-8"))
+    data: dict[str, Any] = json.loads((folder / name).read_text(encoding="utf-8"))
+    return data
 
 
 def raw(folder: Path, name: str) -> RawResponse:

@@ -9,12 +9,13 @@ import threading
 import time
 import unittest
 import urllib.request
+from collections.abc import Mapping
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from unittest import mock
 
 from vyron_api.adapters.memory_cache import InMemoryTTLCache
 from vyron_api.github.conditional import cache_key, cached_get
-from vyron_api.github.retry import send_with_retry
+from vyron_api.github.retry import RawResponse, send_with_retry
 from vyron_api.github.transport import UrllibGitHubTransport
 from vyron_api.providers.github import (
     GitHubError,
@@ -71,6 +72,7 @@ class Handler(BaseHTTPRequestHandler):
                 {"X-RateLimit-Remaining": "0", "X-RateLimit-Reset": str(int(time.time()) + 5000)},
             )
         elif self.path == "/redirect":
+            assert isinstance(self.server, ThreadingHTTPServer)
             self._send(301, headers={"Location": f"http://127.0.0.1:{self.server.server_port}/other"})
         elif self.path == "/other":
             self._send(200, b"{}")
@@ -172,7 +174,7 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
         cache = InMemoryTTLCache()
         key = cache_key("/truncated")
 
-        async def send(headers: dict[str, str]):  # type: ignore[no-untyped-def]
+        async def send(headers: Mapping[str, str]) -> RawResponse:
             return await transport.get("/truncated", headers)
 
         async def no_sleep(_: float) -> None:
@@ -196,7 +198,7 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
         cache = InMemoryTTLCache()
         key = cache_key("/repos/a/b")
 
-        async def send(headers: dict[str, str]):  # type: ignore[no-untyped-def]
+        async def send(headers: Mapping[str, str]) -> RawResponse:
             return await transport.get("/repos/a/b", headers)
 
         first = await cached_get(cache, key, send)
@@ -211,10 +213,10 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
     async def test_typed_errors_over_real_sockets(self) -> None:
         transport = self.transport()
 
-        async def missing(headers: dict[str, str]):  # type: ignore[no-untyped-def]
+        async def missing(headers: Mapping[str, str]) -> RawResponse:
             return await transport.get("/missing", headers)
 
-        async def limited(headers: dict[str, str]):  # type: ignore[no-untyped-def]
+        async def limited(headers: Mapping[str, str]) -> RawResponse:
             return await transport.get("/limited", headers)
 
         with self.assertRaises(GitHubNotFoundError):
@@ -234,7 +236,7 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
             {"timeout": 0},
         ):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
-                UrllibGitHubTransport(**kwargs)  # type: ignore[arg-type]
+                UrllibGitHubTransport(**kwargs)
         with self.assertRaises(ValueError):  # test flag only unlocks loopback hosts
             UrllibGitHubTransport(base_url="https://evil.example", allow_local_test_server=True)
 
@@ -253,9 +255,10 @@ class TransportTest(unittest.IsolatedAsyncioTestCase):
         context = transport._context
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
         self.assertTrue(context.check_hostname)
-        handlers = [h for h in transport._opener.handlers if isinstance(h, urllib.request.HTTPSHandler)]
+        opener_handlers = getattr(transport._opener, "handlers", ())
+        handlers = [h for h in opener_handlers if isinstance(h, urllib.request.HTTPSHandler)]
         self.assertEqual(len(handlers), 1, "exactly one HTTPS handler")
-        self.assertIs(handlers[0]._context, context, "the opener must use the verifying context")
+        self.assertIs(getattr(handlers[0], "_context", None), context, "the opener must use the verifying context")
 
     def test_url_for_only_accepts_api_paths_on_the_configured_host(self) -> None:
         transport = UrllibGitHubTransport()

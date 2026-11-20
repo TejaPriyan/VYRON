@@ -41,7 +41,7 @@ def _body(environ: dict[str, Any]) -> bytes:
     if length <= 0:
         return b""
     # Never read more than one byte past the limit; the application turns that into a 413.
-    return environ["wsgi.input"].read(min(length, limits.MAX_BODY_BYTES + 1))
+    return bytes(environ["wsgi.input"].read(min(length, limits.MAX_BODY_BYTES + 1)))
 
 
 def make_wsgi_app(application: Application, *, trusted_proxy_hops: int = 0) -> Callable[..., Iterable[bytes]]:

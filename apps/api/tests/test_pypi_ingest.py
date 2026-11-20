@@ -118,7 +118,8 @@ class Fetch(unittest.TestCase):
         self.assertEqual(pkg.dependencies, ())
 
     def test_no_requirements_is_not_an_error(self) -> None:
-        for value in (None, []):
+        empty: list[str] = []
+        for value in (None, empty):
             pkg = fetch_pypi_package(
                 "flask",
                 transport=FakeTransport({FLASK_URL: flask_body(requires_dist=value)}),  # type: ignore[arg-type]

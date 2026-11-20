@@ -1,6 +1,7 @@
 import copy
 import unittest
 from datetime import UTC, datetime
+from typing import Any
 
 from vyron_api.github.normalize import (
     MAX_DESCRIPTION_CHARS,
@@ -155,7 +156,7 @@ class NormalizeLanguagesTest(unittest.TestCase):
         self.assertEqual(normalize_languages({}), {})
 
     def test_invalid(self) -> None:
-        for payload in (
+        invalid_payloads: tuple[Any, ...] = (
             None,
             [],
             {"Python": "1000"},
@@ -165,12 +166,13 @@ class NormalizeLanguagesTest(unittest.TestCase):
             {"": 1},
             {"x" * 300: 1},
             {f"L{i}": 1 for i in range(MAX_LANGUAGES + 1)},
-        ):
+        )
+        for payload in invalid_payloads:
             with self.subTest(payload=str(payload)[:50]), self.assertRaises(MalformedGitHubPayloadError):
                 normalize_languages(payload)
 
 
-RATE = {
+RATE: dict[str, Any] = {
     "resources": {
         "core": {"limit": 60, "used": 2, "remaining": 58, "reset": 1_792_580_000},
         "search": {"limit": 10, "used": 0, "remaining": 10, "reset": 1_792_577_790},
@@ -190,12 +192,24 @@ class NormalizeRateLimitTest(unittest.TestCase):
         def with_core(**changes: object) -> dict[str, object]:
             return {"resources": {"core": {**RATE["resources"]["core"], **changes}}}
 
-        for payload in (
-            None, [], "x", {}, {"resources": None}, {"resources": []}, {"resources": {}},
-            {"resources": {"core": None}}, {"resources": {"core": []}}, {"rate": RATE["rate"]},
-            with_core(limit="60"), with_core(remaining=-1), with_core(used=True), with_core(reset=1.5),
+        invalid_rates: tuple[Any, ...] = (
+            None,
+            [],
+            "x",
+            {},
+            {"resources": None},
+            {"resources": []},
+            {"resources": {}},
+            {"resources": {"core": None}},
+            {"resources": {"core": []}},
+            {"rate": RATE["rate"]},
+            with_core(limit="60"),
+            with_core(remaining=-1),
+            with_core(used=True),
+            with_core(reset=1.5),
             with_core(limit=None),
-        ):  # fmt: skip
+        )
+        for payload in invalid_rates:
             with self.subTest(payload=str(payload)[:60]), self.assertRaises(MalformedGitHubPayloadError):
                 normalize_rate_limit(payload)
 
