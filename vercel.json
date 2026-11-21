@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
   "buildCommand": "npx --yes --package=typescript@6.0.3 tsc -p apps/web/prototype/tsconfig.json",
   "outputDirectory": "apps/web/prototype/dist",
   "functions": {
