@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "npm install --no-audit --no-fund --prefix /tmp/vyron-tsc typescript@6.0.3 && if [ -f apps/web/prototype/tsconfig.json ]; then /tmp/vyron-tsc/node_modules/.bin/tsc --project apps/web/prototype/tsconfig.json; elif [ -f ../apps/web/prototype/tsconfig.json ]; then (cd .. && /tmp/vyron-tsc/node_modules/.bin/tsc --project apps/web/prototype/tsconfig.json); elif [ -f ../../apps/web/prototype/tsconfig.json ]; then (cd ../.. && /tmp/vyron-tsc/node_modules/.bin/tsc --project apps/web/prototype/tsconfig.json); else echo \"DEBUG_CWD=$(pwd)\"; ls -la; ls -la apps 2>&1 || true; find . -maxdepth 4 -name tsconfig.json 2>&1 || true; exit 1; fi",
+  "buildCommand": "pwd && ls -la && npm i --no-audit --no-fund --prefix /tmp/vt typescript@6.0.3 && T=$(find . .. ../.. -maxdepth 4 -path '*/prototype/tsconfig.json' 2>/dev/null | head -n1) && echo \"T=$T\" && /tmp/vt/node_modules/.bin/tsc -p \"$T\"",
   "outputDirectory": "apps/web/prototype/dist",
   "functions": {
     "api/index.py": {
