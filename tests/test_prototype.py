@@ -179,6 +179,18 @@ class StaticServing(ServerTestCase):
             with self.subTest(path=path):
                 self.assertEqual(call(vercel_app, path).status, 200)
 
+    def test_vercelignore_anchors_top_level_directories_so_runtime_packages_stay_bundled(self) -> None:
+        lines = [
+            line.strip()
+            for line in (ROOT / ".vercelignore").read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        self.assertNotIn("services", lines, "unanchored 'services' strips apps/api/src/vyron_api/services on Vercel")
+        self.assertIn("/services", lines)
+        for name in ("docs", "infrastructure", "tests"):
+            self.assertNotIn(name, lines)
+            self.assertIn(f"/{name}", lines)
+
     def test_the_served_tokens_are_the_generated_design_tokens(self) -> None:
         self.assertEqual(call(self.app, "/tokens.css").body, TOKENS_CSS.read_bytes())
 

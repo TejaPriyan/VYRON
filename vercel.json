@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "pwd && ls -la && npm i --no-audit --no-fund --prefix /tmp/vt typescript@6.0.3 && T=$(find . .. ../.. -maxdepth 4 -path '*/prototype/tsconfig.json' 2>/dev/null | head -n1) && echo \"T=$T\" && /tmp/vt/node_modules/.bin/tsc -p \"$T\"",
+  "buildCommand": "npm i --no-audit --no-fund --prefix /tmp/vt typescript@6.0.3 && /tmp/vt/node_modules/.bin/tsc -p apps/web/prototype/tsconfig.json",
   "outputDirectory": "apps/web/prototype/dist",
   "functions": {
     "api/index.py": {
