@@ -34,10 +34,13 @@ function el<T extends HTMLElement>(id: string): T {
 
 const client = new VyronClient({ baseUrl: "" });
 const stage = el<HTMLElement>("stage");
+const atlasIntro = el<HTMLElement>("atlas-intro");
 const stageState = el<HTMLElement>("stage-state");
 const stageHint = el<HTMLElement>("stage-hint");
 const urlNotice = el<HTMLElement>("url-notice");
 const live = el<HTMLElement>("live");
+
+atlasIntro.hidden = true;
 
 fill(el("brand-mark"), brandMark());
 fill(el("search-icon"), controlIcon("search"));

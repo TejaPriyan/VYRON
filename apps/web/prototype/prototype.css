@@ -1087,6 +1087,34 @@ kbd {
 .status p {
   margin: 0;
 }
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vy-space-4);
+  margin-left: auto;
+}
+.footer-link {
+  color: var(--vy-color-text-ash);
+  text-decoration: none;
+}
+.footer-link:hover {
+  color: var(--vy-color-text-bone);
+  text-decoration: underline;
+}
+.atlas-intro {
+  max-width: var(--vy-layout-reading-measure);
+  margin: var(--vy-space-7) auto;
+  padding: 0 var(--vy-space-5);
+  color: var(--vy-color-text-ash);
+}
+.atlas-intro[hidden] {
+  display: none;
+}
+.atlas-intro h1,
+.atlas-intro h2 {
+  font-family: var(--vy-font-serif);
+  color: var(--vy-color-text-bone);
+}
 .warn {
   color: var(--vy-color-status-warn);
   font-weight: 500;
@@ -2768,6 +2796,52 @@ kbd {
   font-size: 0.875rem;
   color: var(--vy-color-text-bone);
   overflow-wrap: anywhere;
+}
+
+.info-article {
+  max-width: var(--vy-layout-reading-measure);
+  padding-top: var(--vy-space-5);
+}
+.info-title {
+  margin: 0 0 var(--vy-space-4);
+  font-family: var(--vy-font-serif);
+  font-size: var(--vy-type-title-size);
+  line-height: var(--vy-type-title-line);
+  font-weight: var(--vy-type-title-weight);
+  letter-spacing: var(--vy-type-title-tracking);
+  color: var(--vy-color-text-bone);
+}
+.info-lede {
+  margin: 0 0 var(--vy-space-6);
+  color: var(--vy-color-text-ash);
+  font-family: var(--vy-font-serif);
+  font-size: var(--vy-type-reading-size);
+  line-height: var(--vy-type-reading-line);
+}
+.info-section {
+  margin: 0 0 var(--vy-space-6);
+  padding-top: var(--vy-space-4);
+  border-top: var(--vy-border-hairline) solid var(--vy-color-line-hairline);
+}
+.info-section h2 {
+  margin: 0 0 var(--vy-space-3);
+  font-family: var(--vy-font-serif);
+  font-size: var(--vy-type-heading-size);
+  line-height: var(--vy-type-heading-line);
+  font-weight: var(--vy-type-heading-weight);
+  color: var(--vy-color-text-bone);
+}
+.info-section p {
+  margin: 0 0 var(--vy-space-3);
+  color: var(--vy-color-text-ash);
+}
+.info-list {
+  margin: 0 0 var(--vy-space-3);
+  padding-left: var(--vy-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--vy-space-2);
+  color: var(--vy-color-text-ash);
 }
 
 @container (width < 600px) {

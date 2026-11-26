@@ -50,8 +50,10 @@ class Response:
         self.body = body
 
 
-def call(app: Any, path: str, method: str = "GET", query: str = "") -> Response:
+def call(app: Any, path: str, method: str = "GET", query: str = "", accept: str = "") -> Response:
     environ: dict[str, Any] = {"REQUEST_METHOD": method, "PATH_INFO": path, "QUERY_STRING": query}
+    if accept:
+        environ["HTTP_ACCEPT"] = accept
     setup_testing_defaults(environ)
     environ["REMOTE_ADDR"] = "127.0.0.1"
     captured: dict[str, Any] = {}
@@ -149,8 +151,15 @@ class StaticServing(ServerTestCase):
             "/robots.txt": "text/plain",
             "/sitemap.xml": "application/xml",
             "/llms.txt": "text/plain",
+            "/llms-full.txt": "text/plain",
+            "/.well-known/llms.txt": "text/plain",
             "/schema.jsonld": "application/ld+json",
             "/site.webmanifest": "application/manifest+json",
+            "/favicon.ico": "image/x-icon",
+            "/og-image.png": "image/png",
+            "/about": "text/html",
+            "/contact": "text/html",
+            "/privacy": "text/html",
         }
         for path, content_type in expected.items():
             with self.subTest(path=path):
@@ -161,12 +170,36 @@ class StaticServing(ServerTestCase):
         schema = json.loads(call(self.app, "/schema.jsonld").body)
         self.assertEqual(schema["@context"], "https://schema.org")
         self.assertGreaterEqual(len(schema["@graph"]), 5)
+        types = {node.get("@type") for node in schema["@graph"]}
+        self.assertTrue({"Organization", "WebSite", "SoftwareApplication", "FAQPage"} <= types)
         manifest = json.loads(call(self.app, "/site.webmanifest").body)
         self.assertEqual(manifest["short_name"], "VYRON")
         robots = call(self.app, "/robots.txt").body.decode("utf-8")
-        self.assertIn("Sitemap: /sitemap.xml", robots)
+        self.assertIn("Sitemap: https://vyron-orpin.vercel.app/sitemap.xml", robots)
+        sitemap = call(self.app, "/sitemap.xml").body.decode("utf-8")
+        self.assertIn("<loc>https://vyron-orpin.vercel.app/</loc>", sitemap)
+        self.assertIn("<loc>https://vyron-orpin.vercel.app/about</loc>", sitemap)
         llms = call(self.app, "/llms.txt").body.decode("utf-8")
         self.assertIn("not production ready", llms)
+        self.assertIn("## When to Use VYRON", llms)
+
+    def test_markdown_content_negotiation_and_agent_friendly_404(self) -> None:
+        html = call(self.app, "/", accept="text/html,application/xhtml+xml;q=0.9,*/*;q=0.8")
+        self.assertEqual(html.status, 200)
+        self.assertTrue(html.headers["content-type"].startswith("text/html"))
+        self.assertEqual(html.headers.get("vary"), "Accept")
+        for path in ("/", "/repository.html", "/dependencies.html", "/compare.html", "/about", "/contact", "/privacy"):
+            with self.subTest(path=path):
+                md = call(self.app, path, accept="text/markdown")
+                self.assertEqual(md.status, 200)
+                self.assertTrue(md.headers["content-type"].startswith("text/markdown"))
+                self.assertEqual(md.headers.get("vary"), "Accept")
+                self.assertIn("# ", md.body.decode("utf-8"))
+        missing_md = call(self.app, "/no-such-page", accept="text/markdown")
+        self.assertEqual(missing_md.status, 404)
+        self.assertTrue(missing_md.headers["content-type"].startswith("text/markdown"))
+        self.assertEqual(missing_md.headers.get("vary"), "Accept")
+        self.assertIn("/llms.txt", missing_md.body.decode("utf-8"))
 
     def test_vercel_wsgi_entrypoint_serves_pages_discovery_files_and_api(self) -> None:
         spec = importlib.util.spec_from_file_location("vyron_vercel_index", ROOT / "api" / "index.py")
@@ -174,8 +207,9 @@ class StaticServing(ServerTestCase):
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         vercel_app = module.app
-        for path in ("/", "/repository.html", "/dependencies.html", "/compare.html", "/robots.txt", "/llms.txt",
-                     "/schema.jsonld", "/sitemap.xml", "/site.webmanifest", "/api/v1/meta", "/health/live"):
+        for path in ("/", "/repository.html", "/dependencies.html", "/compare.html", "/about", "/contact",
+                     "/privacy", "/robots.txt", "/llms.txt", "/llms-full.txt", "/schema.jsonld", "/sitemap.xml",
+                     "/site.webmanifest", "/favicon.ico", "/og-image.png", "/api/v1/meta", "/health/live"):
             with self.subTest(path=path):
                 self.assertEqual(call(vercel_app, path).status, 200)
 
@@ -305,12 +339,15 @@ class PageParser(HTMLParser):
         self.ids: set[str] = set()
         self.classes: set[str] = set()
         self.inline_scripts = 0
+        self.json_ld_blocks: list[str] = []
         self.style_elements = 0
         self.style_attributes = 0
         self.event_attributes: list[str] = []
         self.references: list[tuple[str, str]] = []
         self._in_script = False
         self._script_has_src = False
+        self._script_is_json_ld = False
+        self._json_ld_chunks: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = {name: value or "" for name, value in attrs}
@@ -325,16 +362,26 @@ class PageParser(HTMLParser):
         if tag == "script":
             self._in_script = True
             self._script_has_src = "src" in attributes
+            self._script_is_json_ld = attributes.get("type", "").strip().lower() == "application/ld+json"
+            self._json_ld_chunks = []
         for name in ("src", "href"):
             if name in attributes and tag in ("script", "link", "img"):
+                if tag == "link" and attributes.get("rel", "").strip().lower() == "canonical":
+                    continue
                 self.references.append((tag, attributes[name]))
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "script":
+            if self._script_is_json_ld:
+                self.json_ld_blocks.append("".join(self._json_ld_chunks))
             self._in_script = False
+            self._script_is_json_ld = False
+            self._json_ld_chunks = []
 
     def handle_data(self, data: str) -> None:
-        if self._in_script and not self._script_has_src and data.strip():
+        if self._in_script and self._script_is_json_ld:
+            self._json_ld_chunks.append(data)
+        elif self._in_script and not self._script_has_src and data.strip():
             self.inline_scripts += 1
 
 
@@ -380,7 +427,10 @@ class PageContractTests(_MixinBase):
         self.assertTrue(self.page.references)
         for _tag, target in self.page.references:
             self.assertTrue(target.startswith("/") and not target.startswith("//"), target)
-        self.assertNotRegex(self.html, r"https?://(?!www\.w3\.org)")
+        self.assertTrue(self.page.json_ld_blocks, "every page should embed valid JSON-LD structured data")
+        for block in self.page.json_ld_blocks:
+            parsed = json.loads(block)
+            self.assertEqual(parsed.get("@context"), "https://schema.org")
 
     def test_every_referenced_asset_is_served(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -399,8 +449,8 @@ class PageContractTests(_MixinBase):
         self.assertIn('<html lang="en">', self.html)
         self.assertIn("width=device-width", self.html)
         self.assertRegex(self.html, r"<title>[^<]+</title>")
-        for marker in ('name="robots"', 'property="og:title"', 'name="twitter:card"',
-                       'href="/schema.jsonld"', 'href="/llms.txt"', 'href="/site.webmanifest"'):
+        for marker in ('name="robots"', 'rel="canonical"', 'property="og:title"', 'property="og:image"',
+                       'name="twitter:card"', 'href="/schema.jsonld"', 'href="/llms.txt"', 'href="/site.webmanifest"'):
             self.assertIn(marker, self.html)
 
     def test_the_page_script_is_the_one_the_html_loads(self) -> None:
@@ -628,7 +678,15 @@ class StylesheetContract(unittest.TestCase):
 
     def test_it_styles_every_class_the_pages_declare(self) -> None:
         selectors = set(re.findall(r"\.([a-z][a-z0-9-]*)", self.css))
-        for name in ("index.html", "repository.html", "dependencies.html", "compare.html"):
+        for name in (
+            "index.html",
+            "repository.html",
+            "dependencies.html",
+            "compare.html",
+            "about.html",
+            "contact.html",
+            "privacy.html",
+        ):
             page = PageParser()
             page.feed((PROTOTYPE / name).read_text(encoding="utf-8"))
             # The screen-reader class and the skip link are styled; nothing else may be left bare.

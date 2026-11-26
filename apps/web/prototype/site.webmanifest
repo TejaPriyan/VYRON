@@ -3,6 +3,7 @@
   "short_name": "VYRON",
   "description": "Provenance-first interactive technology map, live GitHub repository reader, PyPI/npm dependency explorer, and side-by-side comparison tool.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0e14",
   "theme_color": "#0a0e14",
@@ -11,6 +12,11 @@
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
     }
   ]
 }

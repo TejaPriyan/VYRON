@@ -2,21 +2,89 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://vyron-orpin.vercel.app/#organization",
+      "name": "VYRON Project",
+      "alternateName": "VYRON",
+      "url": "https://vyron-orpin.vercel.app",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://vyron-orpin.vercel.app/og-image.png",
+        "width": 1200,
+        "height": 630
+      },
+      "sameAs": [
+        "https://github.com/TejaPriyan/VYRON"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "technical support",
+        "email": "teja1616150@gmail.com",
+        "url": "https://github.com/TejaPriyan/VYRON/issues",
+        "availableLanguage": "English"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      }
+    },
+    {
       "@type": "WebSite",
-      "@id": "/#website",
+      "@id": "https://vyron-orpin.vercel.app/#website",
+      "url": "https://vyron-orpin.vercel.app/",
       "name": "VYRON: The Living Map of Technology",
       "alternateName": "VYRON",
-      "description": "An interactive, provenance-first technology atlas for exploring technology relationships, shortest paths, timelines, live GitHub repositories, live PyPI and npm dependency graphs, release histories, and side-by-side comparisons.",
+      "description": "An open-source, provenance-first technology atlas for exploring technology relationships, shortest paths, timelines, live GitHub repositories, live PyPI and npm dependency graphs, release histories, and side-by-side comparisons.",
       "inLanguage": "en",
-      "url": "/"
+      "publisher": {
+        "@id": "https://vyron-orpin.vercel.app/#organization"
+      },
+      "keywords": [
+        "technology atlas",
+        "technology map",
+        "GitHub repository analyzer",
+        "PyPI dependency graph",
+        "npm dependency graph",
+        "software provenance",
+        "package comparison"
+      ],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://vyron-orpin.vercel.app/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "/#app",
+      "@id": "https://vyron-orpin.vercel.app/#app",
       "name": "VYRON",
+      "url": "https://vyron-orpin.vercel.app/",
+      "image": "https://vyron-orpin.vercel.app/og-image.png",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web",
+      "isAccessibleForFree": true,
       "license": "https://opensource.org/licenses/MIT",
+      "codeRepository": "https://github.com/TejaPriyan/VYRON",
+      "publisher": {
+        "@id": "https://vyron-orpin.vercel.app/#organization"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "keywords": "technology map, dependency graph, GitHub repository analyzer, PyPI dependencies, npm dependencies, release history, software provenance",
+      "knowsAbout": [
+        "Software engineering ecosystems",
+        "GitHub public repositories",
+        "PyPI Python package dependencies",
+        "npm JavaScript package dependencies",
+        "Software dependency graphs",
+        "Data provenance"
+      ],
       "description": "Open-source development prototype mapping technology ecosystems with explicit provenance, live GitHub repository readings, live PyPI/npm dependency trees, release histories, and side-by-side package and repository comparison.",
       "featureList": [
         "Interactive SVG technology map with cluster detection and accessible text outline",
@@ -25,40 +93,83 @@
         "Live public GitHub repository analysis with contributors, latest release, and 52-week commit activity",
         "Live PyPI and npm interactive dependency graph and release date timeline",
         "Side-by-side comparison of two packages or two GitHub repositories with overlap diff",
-        "Client-side JSON evidence pack export with exact source URLs and timestamps"
+        "Client-side JSON evidence pack export with exact source URLs and timestamps",
+        "Markdown content negotiation (Accept: text/markdown) and llms.txt discovery for AI agents"
       ]
     },
     {
       "@type": "WebPage",
-      "@id": "/#map",
-      "url": "/",
-      "name": "VYRON Interactive Technology Map",
+      "@id": "https://vyron-orpin.vercel.app/#map",
+      "url": "https://vyron-orpin.vercel.app/",
+      "name": "VYRON — The Living Map of Technology",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
       "description": "Explore 60 development-seed technologies, 68 relationships, 20 clusters, shortest paths, and historical timeline slices."
     },
     {
       "@type": "WebPage",
-      "@id": "/repository.html#page",
-      "url": "/repository.html",
-      "name": "VYRON Live GitHub Repository Analysis",
+      "@id": "https://vyron-orpin.vercel.app/repository.html#page",
+      "url": "https://vyron-orpin.vercel.app/repository.html",
+      "name": "VYRON Live GitHub Repository Analyzer",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
       "description": "Inspect any public GitHub repository live with stars, forks, license, language shares, contributors, latest release, commit activity, and exact API source URLs."
     },
     {
       "@type": "WebPage",
-      "@id": "/dependencies.html#page",
-      "url": "/dependencies.html",
-      "name": "VYRON Package Dependency Graph & Release History",
+      "@id": "https://vyron-orpin.vercel.app/dependencies.html#page",
+      "url": "https://vyron-orpin.vercel.app/dependencies.html",
+      "name": "VYRON PyPI & npm Dependency Graph & Release History",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
       "description": "Explore declared PyPI and npm package dependencies one package at a time alongside registry release dates and provenance."
     },
     {
       "@type": "WebPage",
-      "@id": "/compare.html#page",
-      "url": "/compare.html",
-      "name": "VYRON Side-by-Side Compare",
+      "@id": "https://vyron-orpin.vercel.app/compare.html#page",
+      "url": "https://vyron-orpin.vercel.app/compare.html",
+      "name": "VYRON Side-by-Side Package & Repository Compare",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
       "description": "Compare two PyPI or npm packages or two public GitHub repositories side by side with dependency and language overlap diffs."
     },
     {
+      "@type": "AboutPage",
+      "@id": "https://vyron-orpin.vercel.app/about#page",
+      "url": "https://vyron-orpin.vercel.app/about",
+      "name": "About VYRON",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
+      "description": "Mission, provenance-first principles, early-development status, and open-source MIT repository details for VYRON."
+    },
+    {
+      "@type": "ContactPage",
+      "@id": "https://vyron-orpin.vercel.app/contact#page",
+      "url": "https://vyron-orpin.vercel.app/contact",
+      "name": "Contact VYRON",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
+      "description": "Maintainer contact, GitHub issues, security disclosure process, and contribution links for VYRON."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://vyron-orpin.vercel.app/privacy#page",
+      "url": "https://vyron-orpin.vercel.app/privacy",
+      "name": "VYRON Privacy & Data Handling",
+      "isPartOf": {
+        "@id": "https://vyron-orpin.vercel.app/#website"
+      },
+      "description": "How VYRON protects privacy with zero browser storage, zero tracking cookies, server-side-only upstream reads, and strict CSP."
+    },
+    {
       "@type": "FAQPage",
-      "@id": "/#faq",
+      "@id": "https://vyron-orpin.vercel.app/#faq",
       "mainEntity": [
         {
           "@type": "Question",
@@ -82,6 +193,14 @@
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "No. VYRON uses no browser storage (no localStorage, sessionStorage, or tracking cookies), enforces a strict Content Security Policy, and performs all external API requests server-side."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can AI agents and developers query VYRON programmatically?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "VYRON exposes a same-origin JSON HTTP API under /api/v1/* (including live GitHub repository analysis and PyPI/npm dependency and release endpoints), serves /llms.txt and /llms-full.txt discovery manifests, and supports Accept: text/markdown content negotiation on all HTML pages."
           }
         }
       ]

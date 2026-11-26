@@ -12,7 +12,7 @@ side is a fixed table of files plus the compiled scripts under ``dist/js``; noth
 reached. Compile the scripts first with ``python3 scripts/build_prototype.py`` (needs only ``tsc``).
 
 The page's Content-Security-Policy allows no inline script and no inline style, which is why the code
-never sets either.
+never sets either. HTML routes also honor ``Accept: text/markdown`` with ``Vary: Accept`` for AI agents.
 """
 
 from __future__ import annotations
@@ -47,6 +47,12 @@ CONTENT_SECURITY_POLICY = (
     "form-action 'self'; frame-ancestors 'none'"
 )
 
+DISCOVERY_LINK_HEADER = (
+    '</llms.txt>; rel="alternate"; type="text/plain", '
+    '</llms-full.txt>; rel="alternate"; type="text/plain", '
+    '</schema.jsonld>; rel="alternate"; type="application/ld+json"'
+)
+
 #: The only files served outside ``/js``. Exact match, so there is no path to traverse.
 STATIC_FILES: dict[str, tuple[Path, str]] = {
     "/": (PROTOTYPE / "index.html", "text/html; charset=utf-8"),
@@ -54,15 +60,109 @@ STATIC_FILES: dict[str, tuple[Path, str]] = {
     "/repository.html": (PROTOTYPE / "repository.html", "text/html; charset=utf-8"),
     "/dependencies.html": (PROTOTYPE / "dependencies.html", "text/html; charset=utf-8"),
     "/compare.html": (PROTOTYPE / "compare.html", "text/html; charset=utf-8"),
+    "/about": (PROTOTYPE / "about.html", "text/html; charset=utf-8"),
+    "/about.html": (PROTOTYPE / "about.html", "text/html; charset=utf-8"),
+    "/contact": (PROTOTYPE / "contact.html", "text/html; charset=utf-8"),
+    "/contact.html": (PROTOTYPE / "contact.html", "text/html; charset=utf-8"),
+    "/privacy": (PROTOTYPE / "privacy.html", "text/html; charset=utf-8"),
+    "/privacy.html": (PROTOTYPE / "privacy.html", "text/html; charset=utf-8"),
     "/prototype.css": (PROTOTYPE / "prototype.css", "text/css; charset=utf-8"),
     "/tokens.css": (ROOT / "apps" / "web" / "src" / "styles" / "tokens.css", "text/css; charset=utf-8"),
     "/favicon.svg": (PROTOTYPE / "favicon.svg", "image/svg+xml"),
+    "/favicon.ico": (PROTOTYPE / "favicon.ico", "image/x-icon"),
+    "/og-image.png": (PROTOTYPE / "og-image.png", "image/png"),
     "/robots.txt": (PROTOTYPE / "robots.txt", "text/plain; charset=utf-8"),
     "/sitemap.xml": (PROTOTYPE / "sitemap.xml", "application/xml; charset=utf-8"),
     "/llms.txt": (PROTOTYPE / "llms.txt", "text/plain; charset=utf-8"),
+    "/llms-full.txt": (PROTOTYPE / "llms-full.txt", "text/plain; charset=utf-8"),
+    "/.well-known/llms.txt": (PROTOTYPE / "llms.txt", "text/plain; charset=utf-8"),
     "/schema.jsonld": (PROTOTYPE / "schema.jsonld", "application/ld+json; charset=utf-8"),
     "/site.webmanifest": (PROTOTYPE / "site.webmanifest", "application/manifest+json; charset=utf-8"),
 }
+
+#: Page-level Markdown representations returned when ``Accept: text/markdown`` is preferred.
+MARKDOWN_PAGES: dict[str, str] = {
+    "/": (
+        "# VYRON — The Living Map of Technology\n\n"
+        "> Open-source, provenance-first interactive technology atlas, live GitHub repository analyzer, "
+        "PyPI/npm dependency graph & release history explorer, and side-by-side comparison tool.\n\n"
+        "Status: early development (**not production ready**). The map shows a clearly labelled 60-entity "
+        "development seed graph (`provenance: \"seed\"`), while Repository, Dependencies, and Compare read live "
+        "public GitHub, PyPI, and npm APIs on demand (`provenance: \"sourced\"`).\n\n"
+        "## Pages\n"
+        "- [Interactive Technology Map](/): 60 seed entities, 68 relationships, 20 clusters, shortest-path finder, "
+        "historical year slider, and JSON export.\n"
+        "- [Live GitHub Repository Analyzer](/repository.html): stars, forks, license, language shares, opt-in "
+        "contributors & latest release, and 52-week commit activity.\n"
+        "- [PyPI & npm Package Dependencies & Releases](/dependencies.html): on-demand layered dependency graph "
+        "plus registry release history timeline.\n"
+        "- [Side-by-Side Compare](/compare.html): deterministic Shared vs. Only-A vs. Only-B dependency and "
+        "language diffs.\n"
+        "- [About](/about) | [Contact](/contact) | [Privacy](/privacy)\n\n"
+        "## Agent & API Discovery\n"
+        "- [llms.txt](/llms.txt) and [llms-full.txt](/llms-full.txt) — When-to-use guide & full API contract\n"
+        "- [schema.jsonld](/schema.jsonld) — Schema.org structured data\n"
+        "- [sitemap.xml](/sitemap.xml) — XML sitemap\n"
+        "- API root: `/api/v1/meta`, `/api/v1/graph/overview`, `/api/v1/search?q=python`, "
+        "`/api/v1/github/repositories/{owner}/{repo}`, `/api/v1/registries/{registry}/package?name=<pkg>`\n"
+    ),
+    "/repository.html": (
+        "# Live GitHub Repository Analyzer — VYRON\n\n"
+        "Inspect any public GitHub repository live via the GitHub REST API without storing user or repo data.\n\n"
+        "- Browser URL: `/repository.html?repo=pallets/flask`\n"
+        "- Core API: `GET /api/v1/github/repositories/{owner}/{repo}`\n"
+        "- Opt-in Activity (contributors & latest release): "
+        "`GET /api/v1/github/repositories/{owner}/{repo}/activity`\n"
+        "- Opt-in 52-week Commit Activity: `GET /api/v1/github/repositories/{owner}/{repo}/commit-activity`\n\n"
+        "See [/llms.txt](/llms.txt) for complete usage guidance.\n"
+    ),
+    "/dependencies.html": (
+        "# PyPI & npm Package Dependency Graph & Release History — VYRON\n\n"
+        "Read declared unconditional runtime dependencies one package at a time from PyPI or npm, with "
+        "left-out conditional/dev/peer/optional declarations counted explicitly and opt-in release timelines.\n\n"
+        "- Browser URL: `/dependencies.html?package=pypi:flask` or `/dependencies.html?package=npm:express`\n"
+        "- Dependencies API: `GET /api/v1/registries/{registry}/package?name=<pkg>`\n"
+        "- Releases API: `GET /api/v1/registries/{registry}/releases?name=<pkg>`\n\n"
+        "See [/llms.txt](/llms.txt) for complete usage guidance.\n"
+    ),
+    "/compare.html": (
+        "# Side-by-Side Package & GitHub Repository Compare — VYRON\n\n"
+        "Compare two PyPI/npm packages or two public GitHub repositories live with deterministic Shared vs. "
+        "Only-A vs. Only-B dependency or language diffs and zero subjective scores.\n\n"
+        "- Packages URL: `/compare.html?mode=packages&a=pypi:flask&b=pypi:django`\n"
+        "- Repositories URL: `/compare.html?mode=repos&a=pallets/flask&b=pallets/werkzeug`\n\n"
+        "See [/llms.txt](/llms.txt) for complete usage guidance.\n"
+    ),
+    "/about": (
+        "# About VYRON\n\n"
+        "VYRON is an open-source (MIT), provenance-first interactive technology atlas and ecosystem explorer "
+        "in early development (not production ready). Every fact carries an explicit provenance label "
+        "(`sourced`, `estimated`, `inferred`, `predicted`, `user_generated`, `ai_generated`, or `seed`).\n\n"
+        "- Repository: https://github.com/TejaPriyan/VYRON\n"
+        "- Pages: [Map](/), [Repository](/repository.html), [Dependencies](/dependencies.html), "
+        "[Compare](/compare.html), [Contact](/contact), [Privacy](/privacy)\n"
+        "- Agent guide: [/llms.txt](/llms.txt)\n"
+    ),
+    "/contact": (
+        "# Contact VYRON\n\n"
+        "- GitHub Issues (bugs & features): https://github.com/TejaPriyan/VYRON/issues\n"
+        "- Maintainer Email: teja1616150@gmail.com\n"
+        "- Security Policy: https://github.com/TejaPriyan/VYRON/blob/main/SECURITY.md\n"
+        "- Code of Conduct: https://github.com/TejaPriyan/VYRON/blob/main/CODE_OF_CONDUCT.md\n"
+        "- Contributing Guide: https://github.com/TejaPriyan/VYRON/blob/main/docs/CONTRIBUTING.md\n"
+    ),
+    "/privacy": (
+        "# VYRON Privacy & Data Handling\n\n"
+        "- Zero browser storage: no `localStorage`, no `sessionStorage`, no tracking cookies, no third-party scripts.\n"
+        "- Strict Content Security Policy (`default-src 'self'`, `script-src 'self'`, `frame-ancestors 'none'`).\n"
+        "- All GitHub, PyPI, and npm API reads execute server-side with short ephemeral in-memory caching.\n"
+        "- Questions: see [Contact](/contact).\n"
+    ),
+}
+MARKDOWN_PAGES["/index.html"] = MARKDOWN_PAGES["/"]
+MARKDOWN_PAGES["/about.html"] = MARKDOWN_PAGES["/about"]
+MARKDOWN_PAGES["/contact.html"] = MARKDOWN_PAGES["/contact"]
+MARKDOWN_PAGES["/privacy.html"] = MARKDOWN_PAGES["/privacy"]
 
 SECURITY_HEADERS = (
     ("Content-Security-Policy", CONTENT_SECURITY_POLICY),
@@ -74,6 +174,49 @@ SECURITY_HEADERS = (
 
 StartResponse = Callable[..., Any]
 WsgiApp = Callable[[dict[str, Any], StartResponse], Iterable[bytes]]
+
+
+def _prefers_markdown(accept_header: str) -> bool:
+    """Return True when the HTTP Accept header explicitly prefers text/markdown over text/html."""
+    if not accept_header:
+        return False
+    md_q = -1.0
+    html_q = -1.0
+    for raw_part in accept_header.split(","):
+        part = raw_part.strip()
+        if not part:
+            continue
+        segments = [seg.strip() for seg in part.split(";")]
+        media = segments[0].lower()
+        q = 1.0
+        for param in segments[1:]:
+            if param.lower().startswith("q="):
+                try:
+                    q = float(param[2:].strip())
+                except ValueError:
+                    q = 0.0
+        if media in ("text/markdown", "text/x-markdown"):
+            md_q = max(md_q, q)
+        elif media == "text/html":
+            html_q = max(html_q, q)
+    return md_q > 0.0 and md_q >= html_q
+
+
+def _markdown_not_found(path: str) -> bytes:
+    safe_path = path.replace("\r", "").replace("\n", "")[:200]
+    body = (
+        "# 404 — Page Not Found\n\n"
+        f"The requested path `{safe_path}` does not exist on VYRON.\n\n"
+        "## Available Pages & Discovery Resources\n"
+        "- [VYRON Technology Map](/)\n"
+        "- [Live GitHub Repository Analyzer](/repository.html)\n"
+        "- [PyPI & npm Package Dependencies](/dependencies.html)\n"
+        "- [Side-by-Side Compare](/compare.html)\n"
+        "- [About](/about) | [Contact](/contact) | [Privacy](/privacy)\n"
+        "- [LLM & Agent Guide (/llms.txt)](/llms.txt)\n"
+        "- [XML Sitemap (/sitemap.xml)](/sitemap.xml)\n"
+    )
+    return body.encode("utf-8")
 
 
 def _resolve_script(path: str, dist: Path) -> Path | None:
@@ -105,8 +248,20 @@ def make_app(
         trusted_proxy_hops=trusted_proxy_hops,
     )
 
-    def respond(start_response: StartResponse, status: str, body: bytes, content_type: str, head: bool) -> list[bytes]:
-        headers = [("Content-Type", content_type), ("Content-Length", str(len(body))), *SECURITY_HEADERS]
+    def respond(
+        start_response: StartResponse,
+        status: str,
+        body: bytes,
+        content_type: str,
+        head: bool,
+        extra_headers: tuple[tuple[str, str], ...] = (),
+    ) -> list[bytes]:
+        headers = [
+            ("Content-Type", content_type),
+            ("Content-Length", str(len(body))),
+            *SECURITY_HEADERS,
+            *extra_headers,
+        ]
         start_response(status, headers)
         return [] if head else [body]
 
@@ -122,6 +277,12 @@ def make_app(
             )
             return []
         head = method == "HEAD"
+        accept = str(environ.get("HTTP_ACCEPT", ""))
+        wants_md = _prefers_markdown(accept)
+        if path in MARKDOWN_PAGES and wants_md:
+            md_body = MARKDOWN_PAGES[path].encode("utf-8")
+            extra = (("Vary", "Accept"), ("Link", DISCOVERY_LINK_HEADER))
+            return respond(start_response, "200 OK", md_body, "text/markdown; charset=utf-8", head, extra)
         target: tuple[Path, str] | None = None
         if path in STATIC_FILES:
             target = STATIC_FILES[path]
@@ -130,13 +291,25 @@ def make_app(
             if script is not None:
                 target = (script, "text/javascript; charset=utf-8")
         if target is None:
+            if wants_md:
+                return respond(
+                    start_response,
+                    "404 Not Found",
+                    _markdown_not_found(path),
+                    "text/markdown; charset=utf-8",
+                    head,
+                    (("Vary", "Accept"),),
+                )
             note = b"Not found.\n"
-            return respond(start_response, "404 Not Found", note, "text/plain; charset=utf-8", head)
+            return respond(
+                start_response, "404 Not Found", note, "text/plain; charset=utf-8", head, (("Vary", "Accept"),)
+            )
         file, content_type = target
         if not file.is_file():
             hint = b"Missing build output. Run: python3 scripts/build_prototype.py\n"
             return respond(start_response, "404 Not Found", hint, "text/plain; charset=utf-8", head)
-        return respond(start_response, "200 OK", file.read_bytes(), content_type, head)
+        extra = (("Vary", "Accept"), ("Link", DISCOVERY_LINK_HEADER)) if path in MARKDOWN_PAGES else ()
+        return respond(start_response, "200 OK", file.read_bytes(), content_type, head, extra)
 
     return app
 

@@ -1,5 +1,16 @@
-# VYRON crawler and AI answer-engine policy
+# VYRON search, answer-engine, and generative-engine crawler policy (SEO / AEO / GEO)
 User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+# Traditional search crawlers
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: Bingbot
 Allow: /
 Disallow: /api/
 Disallow: /health/
@@ -25,6 +36,16 @@ Allow: /
 Disallow: /api/
 Disallow: /health/
 
+User-agent: Claude-Web
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
 User-agent: PerplexityBot
 Allow: /
 Disallow: /api/
@@ -35,5 +56,23 @@ Allow: /
 Disallow: /api/
 Disallow: /health/
 
-Sitemap: /sitemap.xml
-# LLM discovery manifest: /llms.txt
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: DuckAssistBot
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Disallow: /api/
+Disallow: /health/
+
+Sitemap: https://vyron-orpin.vercel.app/sitemap.xml
+# LLM & Agent discovery manifests:
+# https://vyron-orpin.vercel.app/llms.txt
+# https://vyron-orpin.vercel.app/llms-full.txt
+# Markdown content negotiation supported on all HTML routes via: Accept: text/markdown
