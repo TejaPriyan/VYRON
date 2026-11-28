@@ -122,18 +122,41 @@ class TheWeeklyCounts(unittest.TestCase):
             "a week that is a string": [{**good, "week": "1762646400"}],
             "a week that is a float": [{**good, "week": 1762646400.0}],
             "a week that is not a Sunday": [{**good, "week": FIRST_FIXTURE_WEEK + 86_400}],
-            # GitHub's documentation example (1336280400) is five hours past midnight; the real answers were not.
-            "a week that is not at midnight UTC": [{**good, "week": FIRST_FIXTURE_WEEK + 5 * 3_600}],
+            "a week off a timezone quarter-hour": [{**good, "week": FIRST_FIXTURE_WEEK + 123}],
             "a week too large to be a date": [{**good, "week": 10**30}],
             "two weeks the same": [week(0), week(0)],
             "weeks out of order": [week(1), week(0)],
             "a week skipped": [week(0), week(2)],
+            "a gap wider than a DST shift": [week(0), {**good, "week": FIRST_FIXTURE_WEEK + 604_800 - 7_200}],
             "more than a year of weeks": [week(i) for i in range(61)],
         }
         for name, payload in cases.items():
             with self.subTest(name):
                 with self.assertRaises(MalformedGitHubPayloadError):
                     normalize_commit_activity(payload)
+
+    def test_dst_and_timezone_shifted_sunday_weeks_are_accepted(self) -> None:
+        # Observed live on GitHub (TejaPriyan/myself-tejapriyan, 2026-11-28): winter weeks at 01:00 UTC,
+        # spring-forward gap of 601,200 s (6d 23h) across DST, then 00:00 UTC, plus fall-back 608,400 s.
+        spring_forward = [
+            {"days": [0, 0, 0, 0, 0, 0, 0], "total": 0, "week": 1_772_931_600},  # 2026-03-08T01:00:00Z
+            {"days": [0, 0, 0, 0, 0, 0, 1], "total": 1, "week": 1_773_532_800},  # 2026-03-15T00:00:00Z (601,200 s)
+            {"days": [1, 0, 0, 0, 0, 0, 0], "total": 1, "week": 1_774_137_600},  # 2026-03-22T00:00:00Z (604,800 s)
+        ]
+        weeks = normalize_commit_activity(spring_forward)
+        self.assertEqual(len(weeks), 3)
+        self.assertEqual(weeks[0].week_start, datetime(2026, 3, 8, 1, 0, tzinfo=UTC))
+        self.assertEqual(weeks[1].week_start, datetime(2026, 3, 15, 0, 0, tzinfo=UTC))
+
+        fall_back = [
+            {"days": [0, 0, 0, 0, 0, 0, 0], "total": 0, "week": 1_792_886_400},  # 2026-10-25T00:00:00Z
+            {"days": [0, 0, 0, 0, 0, 0, 0], "total": 0, "week": 1_793_494_800},  # 2026-11-01T01:00:00Z (608,400 s)
+        ]
+        self.assertEqual(len(normalize_commit_activity(fall_back)), 2)
+
+        # GitHub's own documentation example (2012-05-06T05:00:00Z) and UTC+5:30 Sunday midnight (Sat 18:30 UTC).
+        self.assertEqual(len(normalize_commit_activity([{**week(0), "week": 1_336_280_400}])), 1)
+        self.assertEqual(len(normalize_commit_activity([{**week(0), "week": FIRST_FIXTURE_WEEK - 19_800}])), 1)
 
     def test_sixty_weeks_is_the_most_it_will_read(self) -> None:
         self.assertEqual(len(normalize_commit_activity([week(i) for i in range(60)])), 60)

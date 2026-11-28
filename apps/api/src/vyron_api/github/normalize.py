@@ -25,6 +25,11 @@ MAX_CONTRIBUTOR_ENTRIES = 100  # GitHub's page-size ceiling; more than this in o
 TOP_CONTRIBUTORS = 10
 MAX_WEEKS = 60  # GitHub documents the last year: 52 weeks. Far more than a year is not this answer
 _SECONDS_PER_DAY = 86_400
+_SECONDS_PER_WEEK = 7 * _SECONDS_PER_DAY
+_FIRST_SUNDAY_EPOCH = 3 * _SECONDS_PER_DAY  # 1970-01-04 00:00 UTC (epoch 0 was Thursday)
+_MAX_TZ_OFFSET_SECONDS = 14 * 3_600  # real IANA timezones span UTC-12 to UTC+14
+_MAX_DST_SHIFT_SECONDS = 3_600  # DST spring-forward / fall-back changes a week by up to 1 hour
+_TZ_GRANULARITY_SECONDS = 900  # all IANA timezone offsets are multiples of 15 minutes
 _NAME_MAX = 200
 _TAG_MAX = 255
 # A login as GitHub shows it: letters, digits, hyphens, and for some accounts underscores or a "[bot]" suffix.
@@ -247,12 +252,12 @@ def normalize_release(payload: Any, repo: RepoRef) -> LatestRelease:
 def normalize_commit_activity(payload: Any) -> tuple[WeekOfCommits, ...]:
     """``GET /repos/{owner}/{repo}/stats/commit_activity``: a year of weekly counts, oldest week first.
 
-    Each entry is ``{"days": [seven counts, Sunday first], "total": n, "week": unix seconds}``. The shape was
-    checked against two real answers (``pallets/flask`` and ``torvalds/linux``, 2026-11-04): 52 entries, the
-    ``week`` values exactly one week apart and each a Sunday at 00:00 UTC, and every ``total`` equal to the sum
-    of its ``days``. Those are held to here rather than assumed, because a chart drawn from a payload that
-    broke them would say something GitHub did not. Anything else raises; nothing is repaired or coerced.
-    An empty list is "no weeks to show" and returns an empty tuple.
+    Each entry is ``{"days": [seven counts, Sunday first], "total": n, "week": unix seconds}``. Real GitHub
+    answers bucket weeks from Sunday at local midnight in the repository or server timezone, so ``week`` can be
+    offset from 00:00 UTC (for example ``01:00 UTC`` in winter or GitHub's own docs example ``05:00 UTC``) and a
+    week crossing a DST transition can be 601,200 or 608,400 seconds long instead of 604,800 (observed live on
+    ``TejaPriyan/myself-tejapriyan``, 2026-11-28). Timestamps are validated against those bounds and preserved
+    verbatim without coercion. Anything else raises. An empty list is "no weeks to show" and returns an empty tuple.
     """
     if not isinstance(payload, list):
         raise MalformedGitHubPayloadError("commit activity payload must be a list")
@@ -278,9 +283,13 @@ def normalize_commit_activity(payload: Any) -> tuple[WeekOfCommits, ...]:
             start = datetime.fromtimestamp(epoch, UTC)
         except (OverflowError, OSError, ValueError) as exc:
             raise MalformedGitHubPayloadError("'week' is not a valid timestamp") from exc
-        if start.weekday() != 6 or epoch % _SECONDS_PER_DAY != 0:
-            raise MalformedGitHubPayloadError("'week' must be a Sunday at 00:00 UTC")
-        if weeks and (epoch - int(weeks[-1].week_start.timestamp())) != 7 * _SECONDS_PER_DAY:
-            raise MalformedGitHubPayloadError("weeks must be consecutive, oldest first")
+        offset_in_week = (epoch - _FIRST_SUNDAY_EPOCH) % _SECONDS_PER_WEEK
+        dist_from_sunday_utc = min(offset_in_week, _SECONDS_PER_WEEK - offset_in_week)
+        if epoch % _TZ_GRANULARITY_SECONDS != 0 or dist_from_sunday_utc > _MAX_TZ_OFFSET_SECONDS:
+            raise MalformedGitHubPayloadError("'week' must be a Sunday midnight timestamp")
+        if weeks:
+            delta = epoch - int(weeks[-1].week_start.timestamp())
+            if abs(delta - _SECONDS_PER_WEEK) > _MAX_DST_SHIFT_SECONDS:
+                raise MalformedGitHubPayloadError("weeks must be consecutive, oldest first")
         weeks.append(WeekOfCommits(week_start=start, days=tuple(counts), total=total))
     return tuple(weeks)

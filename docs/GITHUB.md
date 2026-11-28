@@ -173,11 +173,12 @@ What VYRON does with that:
   is the forbidden error, a rate limit is the rate-limit error and is not slept through).
 - **The shape is checked, not assumed.** The normaliser refuses a list that is not a list, more than 60 weeks, a week
   that is not an object, `days` that is not seven non-negative whole numbers, a `total` that is not their sum, a
-  `week` that is not a whole Unix time falling on a Sunday at midnight UTC, and weeks that are not consecutive and
-  oldest first. Each is reported as "GitHub did not give a usable answer"; nothing is repaired. **GitHub's own
-  documentation example has week times five hours past midnight UTC; the two real answers did not, and VYRON would
-  refuse such a payload.** That strictness is a judgement from two repositories: if GitHub sends other offsets, the
-  page will say it cannot use the answer rather than label days wrongly.
+  `week` that is not a whole Unix time on a 15-minute timezone boundary within ±14 hours of Sunday 00:00 UTC, and weeks
+  that are not consecutive and oldest first (allowing ±1 hour for DST transitions). Each is reported as "GitHub did not
+  give a usable answer"; nothing is repaired or coerced. Earlier strictness required exact 00:00 UTC and 604,800-second
+  gaps based on two repositories, until a live check on `TejaPriyan/myself-tejapriyan` (2026-11-28) showed GitHub really
+  does return winter Sunday timestamps at `01:00 UTC` and a 601,200-second (6d 23h) gap across the March DST spring-forward
+  boundary.
 - **Only the weekly counts are GitHub's.** The page also shows a total for the year, the busiest week and the number
   of weeks with no commits; those are plain sums VYRON makes from GitHub's counts and the page says so beside them.
   Bars are scaled to the busiest week, a week with commits is never drawn as zero, and the same figures are
