@@ -11,20 +11,20 @@ VYRON is in early development and is **not production ready**. Its interactive m
 Reach for VYRON when a developer, researcher, or AI agent needs deterministic, provenance-labelled software ecosystem evidence without subjective scores or vendor lock-in:
 
 - **Inspect a public GitHub repository live:** Fetch verified stars, forks, open issues & pull requests, SPDX license, byte-share language breakdown, opt-in top contributors & latest release, and 52-week commit activity with exact GitHub REST API `source_urls` and cache freshness (`Live` / `Confirmed` / `Stale`).
-  - Browser URL: `https://vyron-orpin.vercel.app/repository.html?repo=pallets/flask`
-  - API call: `curl -sS https://vyron-orpin.vercel.app/api/v1/github/repositories/pallets/flask`
+  - Browser URL: `https://vyronmap.vercel.app/repository.html?repo=pallets/flask`
+  - API call: `curl -sS https://vyronmap.vercel.app/api/v1/github/repositories/pallets/flask`
 - **Trace PyPI or npm package dependencies and release timelines live:** Read declared unconditional dependencies one package at a time (separating left-out conditional, dev, peer, and optional dependencies) and inspect exact registry release dates (`first_file_upload` for PyPI, `publish_time` for npm).
-  - Browser URL: `https://vyron-orpin.vercel.app/dependencies.html?package=pypi:flask`
+  - Browser URL: `https://vyronmap.vercel.app/dependencies.html?package=pypi:flask`
   - API calls:
-    - `curl -sS "https://vyron-orpin.vercel.app/api/v1/registries/pypi/package?name=flask"`
-    - `curl -sS "https://vyron-orpin.vercel.app/api/v1/registries/pypi/releases?name=flask"`
+    - `curl -sS "https://vyronmap.vercel.app/api/v1/registries/pypi/package?name=flask"`
+    - `curl -sS "https://vyronmap.vercel.app/api/v1/registries/pypi/releases?name=flask"`
 - **Compare two packages or two public GitHub repositories side by side:** Generate a deterministic diff of Shared vs. Only-A vs. Only-B direct dependencies, release spans, or language byte shares with downloadable JSON evidence packs.
-  - Browser URL: `https://vyron-orpin.vercel.app/compare.html?mode=packages&a=pypi:flask&b=pypi:django`
+  - Browser URL: `https://vyronmap.vercel.app/compare.html?mode=packages&a=pypi:flask&b=pypi:django`
 - **Explore technology relationships, clusters, shortest paths, and timelines:** Query the 60-entity development-seed technology atlas for cluster membership, PageRank centrality estimates, shortest undirected paths, and historical slices.
-  - Browser URL: `https://vyron-orpin.vercel.app/?q=python`
-  - API call: `curl -sS "https://vyron-orpin.vercel.app/api/v1/search?q=python"`
+  - Browser URL: `https://vyronmap.vercel.app/?q=python`
+  - API call: `curl -sS "https://vyronmap.vercel.app/api/v1/search?q=python"`
 - **Read token-light Markdown directly from any page:** Send `Accept: text/markdown` to any HTML route (`/`, `/repository.html`, `/dependencies.html`, `/compare.html`, `/about`, `/contact`, `/privacy`) to receive structured Markdown with `Vary: Accept`.
-  - Example: `curl -sS -H "Accept: text/markdown" https://vyron-orpin.vercel.app/`
+  - Example: `curl -sS -H "Accept: text/markdown" https://vyronmap.vercel.app/`
 
 ### When NOT to Use VYRON
 
@@ -33,16 +33,16 @@ Reach for VYRON when a developer, researcher, or AI agent needs deterministic, p
 
 ## Primary Pages
 
-- [VYRON Interactive Technology Map](https://vyron-orpin.vercel.app/): 60 seed entities, 68 relationships, 20 auto-detected clusters, fuzzy search, accessible text outline, shortest-path tracer, historical year slider with Play/Pause playback, and JSON entity export.
-- [Live GitHub Repository Analysis](https://vyron-orpin.vercel.app/repository.html): Live public GitHub REST API reader with stars, forks, license, language shares, cache freshness, opt-in contributors/latest release, opt-in 52-week commit activity, and JSON export.
-- [PyPI & npm Package Dependency Graph + Release History](https://vyron-orpin.vercel.app/dependencies.html): On-demand layered dependency graph for PyPI and npm packages with left-out conditional/dev/peer/optional declarations, opt-in release history timeline & table, and JSON evidence packs.
-- [Side-by-Side Compare](https://vyron-orpin.vercel.app/compare.html): Deterministic side-by-side comparison of two PyPI/npm packages or two public GitHub repositories with overlap diffs and provenance badges.
+- [VYRON Interactive Technology Map](https://vyronmap.vercel.app/): 60 seed entities, 68 relationships, 20 auto-detected clusters, fuzzy search, accessible text outline, shortest-path tracer, historical year slider with Play/Pause playback, and JSON entity export.
+- [Live GitHub Repository Analysis](https://vyronmap.vercel.app/repository.html): Live public GitHub REST API reader with stars, forks, license, language shares, cache freshness, opt-in contributors/latest release, opt-in 52-week commit activity, and JSON export.
+- [PyPI & npm Package Dependency Graph + Release History](https://vyronmap.vercel.app/dependencies.html): On-demand layered dependency graph for PyPI and npm packages with left-out conditional/dev/peer/optional declarations, opt-in release history timeline & table, and JSON evidence packs.
+- [Side-by-Side Compare](https://vyronmap.vercel.app/compare.html): Deterministic side-by-side comparison of two PyPI/npm packages or two public GitHub repositories with overlap diffs and provenance badges.
 
 ## Trust & Information Pages
 
-- [About VYRON](https://vyron-orpin.vercel.app/about): Mission, provenance model, early-development status, open-source MIT license, and source repository.
-- [Contact VYRON](https://vyron-orpin.vercel.app/contact): Maintainer contact, GitHub issue tracker, security vulnerability reporting, and community standards.
-- [Privacy & Data Handling](https://vyron-orpin.vercel.app/privacy): Zero browser storage, zero tracking cookies, server-side-only upstream reads, and strict Content Security Policy.
+- [About VYRON](https://vyronmap.vercel.app/about): Mission, provenance model, early-development status, open-source MIT license, and source repository.
+- [Contact VYRON](https://vyronmap.vercel.app/contact): Maintainer contact, GitHub issue tracker, security vulnerability reporting, and community standards.
+- [Privacy & Data Handling](https://vyronmap.vercel.app/privacy): Zero browser storage, zero tracking cookies, server-side-only upstream reads, and strict Content Security Policy.
 
 ## Core API Endpoints (Same-Origin JSON, OpenAPI 3.1)
 
@@ -72,10 +72,10 @@ Built and verified with automated tests: the domain model, provenance rules, in-
 
 ## Machine-Readable Metadata
 
-- Extended Agent Reference: https://vyron-orpin.vercel.app/llms-full.txt
-- Structured Data (JSON-LD): https://vyron-orpin.vercel.app/schema.jsonld
-- Sitemap: https://vyron-orpin.vercel.app/sitemap.xml
-- Crawler Policy: https://vyron-orpin.vercel.app/robots.txt
-- Web App Manifest: https://vyron-orpin.vercel.app/site.webmanifest
+- Extended Agent Reference: https://vyronmap.vercel.app/llms-full.txt
+- Structured Data (JSON-LD): https://vyronmap.vercel.app/schema.jsonld
+- Sitemap: https://vyronmap.vercel.app/sitemap.xml
+- Crawler Policy: https://vyronmap.vercel.app/robots.txt
+- Web App Manifest: https://vyronmap.vercel.app/site.webmanifest
 - Source Repository: https://github.com/TejaPriyan/VYRON
 - License: MIT

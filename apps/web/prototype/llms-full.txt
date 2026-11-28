@@ -1,11 +1,11 @@
 # VYRON: The Living Map of Technology — Full Agent & GEO Reference
 
-> Complete machine-readable documentation for AI assistants, answer engines, and developers evaluating or querying VYRON (`https://vyron-orpin.vercel.app`). Open-source MIT license: `https://github.com/TejaPriyan/VYRON`.
+> Complete machine-readable documentation for AI assistants, answer engines, and developers evaluating or querying VYRON (`https://vyronmap.vercel.app`). Open-source MIT license: `https://github.com/TejaPriyan/VYRON`.
 
 ## 1. Project Identity & Status
 
 - **Name:** VYRON — The Living Map of Technology
-- **Canonical URL:** https://vyron-orpin.vercel.app
+- **Canonical URL:** https://vyronmap.vercel.app
 - **Source Repository:** https://github.com/TejaPriyan/VYRON
 - **License:** MIT
 - **Status:** Early development (**not production ready**). The browser prototype and standard-library Python HTTP API (`vyron_api`) are live and verified; the planned Next.js frontend, WebGL renderer, PostgreSQL/Neo4j/Redis adapters, authentication, and optional Gemini AI layer are not built yet.
@@ -14,17 +14,17 @@
 
 Use VYRON when you need:
 1. **Verified, live GitHub repository telemetry without authentication setup:**
-   - Call `GET https://vyron-orpin.vercel.app/api/v1/github/repositories/{owner}/{repo}`
+   - Call `GET https://vyronmap.vercel.app/api/v1/github/repositories/{owner}/{repo}`
    - Returns stars, forks, open issues, archived/fork flags, default branch, SPDX license, language byte counts, `provenance: "sourced"`, `fetched_at`, cache status, and exact GitHub REST API `source_urls`.
    - For contributors & latest release (opt-in, 2 extra GitHub calls): `GET /api/v1/github/repositories/{owner}/{repo}/activity`
    - For 52-week weekly commit totals (opt-in, never blocks on GitHub 202): `GET /api/v1/github/repositories/{owner}/{repo}/commit-activity`
 2. **Verified, live PyPI or npm dependency declarations & release dates:**
-   - Dependencies: `GET https://vyron-orpin.vercel.app/api/v1/registries/pypi/package?name=flask` or `.../npm/package?name=express`
+   - Dependencies: `GET https://vyronmap.vercel.app/api/v1/registries/pypi/package?name=flask` or `.../npm/package?name=express`
    - Separates unconditional runtime dependencies from left-out conditional (`extra ==`, environment markers), `devDependencies`, `peerDependencies`, and `optionalDependencies`.
-   - Release history: `GET https://vyron-orpin.vercel.app/api/v1/registries/pypi/releases?name=flask` or `.../npm/releases?name=express`
+   - Release history: `GET https://vyronmap.vercel.app/api/v1/registries/pypi/releases?name=flask` or `.../npm/releases?name=express`
 3. **Deterministic side-by-side comparison links for human users:**
-   - Packages: `https://vyron-orpin.vercel.app/compare.html?mode=packages&a=pypi:flask&b=pypi:django`
-   - Repositories: `https://vyron-orpin.vercel.app/compare.html?mode=repos&a=pallets/flask&b=pallets/werkzeug`
+   - Packages: `https://vyronmap.vercel.app/compare.html?mode=packages&a=pypi:flask&b=pypi:django`
+   - Repositories: `https://vyronmap.vercel.app/compare.html?mode=repos&a=pallets/flask&b=pallets/werkzeug`
 4. **Technology graph exploration over the 60-entity development seed:**
    - Overview & clusters: `GET /api/v1/graph/overview?clusters=20&top=20`
    - Fuzzy entity search: `GET /api/v1/search?q=python`
@@ -81,4 +81,4 @@ Every fact returned by VYRON carries an explicit provenance label:
 
 - **Is VYRON free and open source?** Yes, VYRON is released under the MIT License at https://github.com/TejaPriyan/VYRON.
 - **Does VYRON score or rank packages or repositories?** No. VYRON reports deterministic facts (counts, licenses, language shares, declared dependency diffs, release dates) with exact upstream source URLs and leaves judgment to the reader.
-- **How do I report a bug or security issue?** Open a GitHub issue at https://github.com/TejaPriyan/VYRON/issues or see https://vyron-orpin.vercel.app/contact.
+- **How do I report a bug or security issue?** Open a GitHub issue at https://github.com/TejaPriyan/VYRON/issues or see https://vyronmap.vercel.app/contact.

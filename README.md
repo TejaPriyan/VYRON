@@ -67,15 +67,19 @@ python3 scripts/standin_github.py --mode prototype       # offline fixture stand
 python3 scripts/standin_registry.py --mode prototype     # offline fixture stand-in for PyPI & npm
 ```
 
-## Preview Deployment on Vercel (UNVERIFIED on Cloud)
+## Preview Deployment on Vercel
+
+Live preview: **https://vyronmap.vercel.app**
 
 This repository includes [`vercel.json`](vercel.json), [`.vercelignore`](.vercelignore), and a Python WSGI preview
 entrypoint ([`api/index.py`](api/index.py)) that builds the prototype modules with `tsc` and routes requests through
 `vyron_api` + the prototype static table.
 
-- **Verified locally**: WSGI contract tests confirm `api/index.py` serves all pages, SEO/AEO/GEO files, and API routes.
-- **UNVERIFIED on Vercel**: It has not yet been deployed to Vercel's cloud runtime, and it is **not production ready**
-  (seed graph only, no persistent database, per-instance in-memory caches and rate limits).
+- **Verified locally & on Vercel preview**: Serves all pages (`/`, `/repository.html`, `/dependencies.html`,
+  `/compare.html`, `/about`, `/contact`, `/privacy`), SEO/AEO/GEO files (`/robots.txt`, `/sitemap.xml`, `/llms.txt`,
+  `/llms-full.txt`, `/schema.jsonld`), Markdown content negotiation (`Accept: text/markdown`), and live API routes.
+- **Not production ready**: Seed graph only on `/`, no persistent database, and per-instance in-memory caches and rate
+  limits.
 - Optional Vercel Environment Variables: `GITHUB_TOKEN` (public read quota), `VYRON_ENABLE_GITHUB` (`true`/`false`),
   `VYRON_ENABLE_REGISTRIES` (`true`/`false`). Never commit `.env` or tokens.
 
